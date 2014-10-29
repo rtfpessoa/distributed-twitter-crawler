@@ -1,14 +1,30 @@
-name := """distributed-twitter-crawler"""
+import Common._
+import Dependencies._
+import com.typesafe.sbt.web.SbtWeb
+import play.PlayImport._
+import play.PlayScala
+import sbt.Keys._
+import sbt._
 
-version := "1.0-SNAPSHOT"
+name := """distributedTwitterCrawler"""
 
-lazy val root = (project in file(".")).enablePlugins(PlayScala)
-
-scalaVersion := "2.11.1"
+lazy val root = (project in file("."))
+  .enablePlugins(PlayScala)
+  .enablePlugins(SbtWeb)
+  .settings(appSettings: _*)
+  .settings(uiSettings: _*)
 
 libraryDependencies ++= Seq(
-  jdbc,
-  anorm,
+  ws,
   cache,
-  ws
+  gson,
+  scalaTest,
+  jodaTime,
+  mockitoAll,
+  postgresql,
+  playTomcatCP,
+  jquery,
+  slick,
+  akkaActor,
+  twitterApi
 )
