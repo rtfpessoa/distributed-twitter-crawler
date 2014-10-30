@@ -15,7 +15,7 @@ class UserTableDef(tag: Tag) extends Table[User](tag, "User") with BaseTable[Use
 
 }
 
-class UserTable extends TableQuery(new UserTableDef(_)) with BaseTableQueryOps[UserTableDef, User] {
+object UserTable extends TableQuery(new UserTableDef(_)) with BaseTableQueryOps[UserTableDef, User] {
   self =>
 
   lazy val db = GenericDB

@@ -15,7 +15,7 @@ class WorkerTableDef(tag: Tag) extends Table[Worker](tag, "Worker") with BaseTab
 
 }
 
-class WorkerTable extends TableQuery(new WorkerTableDef(_)) with BaseTableQueryOps[WorkerTableDef, Worker] {
+object WorkerTable extends TableQuery(new WorkerTableDef(_)) with BaseTableQueryOps[WorkerTableDef, Worker] {
   self =>
 
   lazy val db = GenericDB

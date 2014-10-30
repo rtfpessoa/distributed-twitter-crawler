@@ -41,7 +41,7 @@ class WorkTableDef(tag: Tag) extends Table[Work](tag, "Work") with BaseTable[Wor
 
 }
 
-class WorkTable extends TableQuery(new WorkTableDef(_)) with BaseTableQueryOps[WorkTableDef, Work] with WorkTableMapper {
+object WorkTable extends TableQuery(new WorkTableDef(_)) with BaseTableQueryOps[WorkTableDef, Work] with WorkTableMapper {
   self =>
 
   lazy val db = GenericDB

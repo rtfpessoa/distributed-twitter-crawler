@@ -16,7 +16,7 @@ class UserTweetTableDef(tag: Tag) extends Table[UserTweet](tag, "UserTweet") wit
 
 }
 
-class UserTweetTable extends TableQuery(new UserTweetTableDef(_)) with BaseTableQueryOps[UserTweetTableDef, UserTweet] {
+object UserTweetTable extends TableQuery(new UserTweetTableDef(_)) with BaseTableQueryOps[UserTweetTableDef, UserTweet] {
   self =>
 
   lazy val db = GenericDB
