@@ -31,9 +31,9 @@ trait WorkTableMapper extends WorkStateMapper with WorkTypeMapper
 
 class WorkTableDef(tag: Tag) extends Table[Work](tag, "Work") with BaseTable[Work] with WorkTableMapper {
 
-  lazy val workerId = column[Option[Long]]("url", O.Nullable)
-  lazy val workType = column[WorkType.Value]("url", O.NotNull)
-  lazy val userId = column[Long]("url", O.NotNull)
+  lazy val workerId = column[Option[Long]]("workerId", O.Nullable)
+  lazy val workType = column[WorkType.Value]("workType", O.NotNull)
+  lazy val userId = column[Long]("userId", O.NotNull)
   lazy val state = column[WorkState.Value]("workId", O.NotNull)
 
   def * = (id, workerId, workType, userId, state) <>(Work.tupled, Work.unapply)
