@@ -1,0 +1,5 @@
+package master
+
+class Mastermind {
+
+}
