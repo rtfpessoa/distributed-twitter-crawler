@@ -1,12 +1,24 @@
-import play.api.{Application, GlobalSettings, Logger}
+import master.Mastermind
+import play.api.Play.current
+import play.api.{Application, GlobalSettings, Logger, Play}
+import worker.Crawler
 
 object Global extends GlobalSettings {
 
-  override def onStart(app: Application) {
-    Logger.info("Application has started")
+  private lazy val config = Play.configuration
 
-    //    val conf = app.configuration
-    //TODO: for each type (mastermind, worker) start the app
+  override def onStart(app: Application) {
+    Logger.info("Distributed Twitter Clients is running")
+
+    if (config.getBoolean("dtc.mastermind").exists(isMastermind => isMastermind)) {
+      val mastermind = new Mastermind
+      mastermind.createWork()
+      mastermind.assignWork()
+    } else {
+      val crawler = new Crawler()
+      //      crawler.register()
+    }
+
   }
 
 }

@@ -1,6 +1,6 @@
 package models
 
-import models.traits.{GenericDB, BaseTable, BaseTableQueryOps}
+import models.traits.{BaseTable, BaseTableQueryOps, GenericDB}
 
 import scala.slick.driver.PostgresDriver.simple._
 import scala.slick.jdbc.JdbcBackend.Database.dynamicSession
@@ -45,5 +45,11 @@ object WorkTable extends TableQuery(new WorkTableDef(_)) with BaseTableQueryOps[
   self =>
 
   lazy val db = GenericDB
+
+  def listByState(state: WorkState.Value): Seq[Work] = {
+    db.withSession {
+      self.filter(_.state === state).list
+    }
+  }
 
 }
