@@ -6,10 +6,14 @@ import scala.slick.driver.PostgresDriver.simple._
 import scala.slick.jdbc.JdbcBackend.Database.dynamicSession
 
 object WorkState extends Enumeration {
-  val New, Completed = Value
+  val New, Working, Completed = Value
 }
 
-case class Work(id: Long, url: String, state: WorkState.Value)
+object WorkType extends Enumeration {
+  val Tweet, UserProfile = Value
+}
+
+case class Work(id: Long, workerId: Option[Long], workType: WorkType.Value, userId: Long, state: WorkState.Value)
 
 trait WorkStateMapper {
   implicit val workStateMapper = MappedColumnType.base[WorkState.Value, String](
@@ -17,24 +21,28 @@ trait WorkStateMapper {
   )
 }
 
-class WorkTableDef(tag: Tag) extends Table[Work](tag, "Work") with BaseTable[Work] with WorkStateMapper {
+trait WorkTypeMapper {
+  implicit val workTypeMapper = MappedColumnType.base[WorkType.Value, String](
+    _.toString, WorkType.withName
+  )
+}
 
-  lazy val url = column[String]("url", O.NotNull)
+trait WorkTableMapper extends WorkStateMapper with WorkTypeMapper
+
+class WorkTableDef(tag: Tag) extends Table[Work](tag, "Work") with BaseTable[Work] with WorkTableMapper {
+
+  lazy val workerId = column[Option[Long]]("url", O.Nullable)
+  lazy val workType = column[WorkType.Value]("url", O.NotNull)
+  lazy val userId = column[Long]("url", O.NotNull)
   lazy val state = column[WorkState.Value]("workId", O.NotNull)
 
-  def * = (id, url, state) <>(Work.tupled, Work.unapply)
+  def * = (id, workerId, workType, userId, state) <>(Work.tupled, Work.unapply)
 
 }
 
-class WorkTable extends TableQuery(new WorkTableDef(_)) with BaseTableQueryOps[WorkTableDef, Work] with WorkStateMapper {
+class WorkTable extends TableQuery(new WorkTableDef(_)) with BaseTableQueryOps[WorkTableDef, Work] with WorkTableMapper {
   self =>
 
   lazy val db = GenericDB
-
-  def get(projectId: Long): Seq[Work] = {
-    db.withSession {
-      self.list()
-    }
-  }
 
 }
