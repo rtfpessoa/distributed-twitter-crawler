@@ -11,7 +11,7 @@ GET        /assets/*file                 controllers.Assets.versioned(path="/pub
 
 # Master
 GET        /addWorker/:ip                controllers.MasterController.addWorker(ip: String)
-GET        /workDone/$tid<[0-9]+>        controllers.MasterController.workDone(wid: Long)
+GET        /workDone/$wid<[0-9]+>        controllers.MasterController.workDone(wid: Long)
 
 # Worker
-GET        /newWork/$tid<[0-9]+>         controllers.WorkerController.newWork(wid: Long)
+GET        /newWork/$wid<[0-9]+>         controllers.WorkerController.newWork(wid: Long)
