@@ -15,9 +15,8 @@ object Global extends GlobalSettings {
       Mastermind.assignWork()
     }
 
-    if (config.getBoolean("dtc.worker.isActive").exists(identity)){
-      val crawler = new Crawler
-      crawler.register()
+    if (config.getBoolean("dtc.worker.isActive").exists(identity)) {
+      Crawler.register()
     }
 
   }

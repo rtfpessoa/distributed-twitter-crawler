@@ -1,11 +1,14 @@
 package controllers
 
+import play.api.libs.json.Json
 import play.api.mvc._
+import worker.Crawler
 
 object WorkerController extends Controller {
 
   def newWork(wid: Long) = Action {
-    Ok(views.html.index("Your new application is ready."))
+    Crawler.newWork(wid)
+    Ok(Json.obj("success" -> "ok"))
   }
 
 }
