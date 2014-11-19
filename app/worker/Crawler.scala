@@ -12,16 +12,22 @@ import play.api.Play.current
 import play.api.libs.ws.WS
 import play.api.{Logger, Play}
 
+import scala.concurrent.ExecutionContext.Implicits.global
+
 object Crawler {
 
-  def register(): Boolean = {
-    Play.configuration.getString("dtc.mastermind.ip").exists {
+  def register(): Unit = {
+    Play.configuration.getString("dtc.mastermind.ip").map {
       masterIp =>
         val myUrl = s"http://${Play.configuration.getString("http.address").getOrElse("127.0.0.1")}:${Play.configuration.getInt("http.port").getOrElse(9000)}"
         val url = s"http://$masterIp${controllers.routes.MastermindController.addWorker(myUrl)}"
-        println(url)
-        WS.url(url).get()
-        true
+        WS.url(url).get().map {
+          response =>
+            (response.json \ "success").asOpt[String].getOrElse {
+              Logger.error(s"Could not register worker: $myUrl")
+              sys.exit(1)
+            }
+        }
     }
   }
 
