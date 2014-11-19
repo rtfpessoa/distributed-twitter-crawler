@@ -4,8 +4,9 @@ import models._
 import play.api.Play
 import play.api.Play.current
 import play.api.libs.concurrent.Akka
-import scala.concurrent.ExecutionContext.Implicits.global
+import play.api.libs.ws.WS
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 import scala.util.control.NonFatal
 
@@ -34,15 +35,17 @@ object Mastermind {
     }.nonEmpty
   }
 
-  def assignWork(workerId: Long): Boolean = {
+  def assignWork(workerId: Long): Option[Work] = {
     val result = try {
       WorkTable.listByState(WorkState.New).headOption.map {
         work =>
           WorkTable.update(work.copy(workerId = Option(workerId)))
-      }.nonEmpty
+          work
+      }
     } catch {
       case NonFatal(_) =>
         assignWork(workerId)
+        Option.empty
     }
 
     val workerDelayDuration = Duration(config.getInt("dtc.work.delay").getOrElse(30), SECONDS)
@@ -55,6 +58,13 @@ object Mastermind {
 
   def registerWorker(ip: String): Worker = {
     WorkerTable.create(Worker(-1, ip))
+  }
+
+  def sendWork(workerId: Long, workId: Long): Unit = {
+    WorkerTable.getById(workerId).map {
+      worker =>
+        WS.url(s"${worker.ip}${controllers.routes.WorkerController.newWork(workId)}").get()
+    }
   }
 
 }
