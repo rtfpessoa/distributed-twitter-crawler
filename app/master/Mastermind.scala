@@ -9,7 +9,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 import scala.util.control.NonFatal
 
-class Mastermind {
+object Mastermind {
 
   private lazy val config = Play.configuration
 
@@ -51,6 +51,10 @@ class Mastermind {
     }
 
     result
+  }
+
+  def registerWorker(ip: String): Worker = {
+    WorkerTable.create(Worker(-1, ip))
   }
 
 }

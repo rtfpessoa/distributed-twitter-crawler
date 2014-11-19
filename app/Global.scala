@@ -10,12 +10,13 @@ object Global extends GlobalSettings {
   override def onStart(app: Application) {
     Logger.info("Distributed Twitter Client is running")
 
-    if (config.getBoolean("dtc.mastermind").exists(isMastermind => isMastermind)) {
-      val mastermind = new Mastermind
-      mastermind.createWork()
-      mastermind.assignWork()
-    } else {
-      val crawler = new Crawler()
+    if (config.getBoolean("dtc.mastermind.isActive").exists(identity)) {
+      Mastermind.createWork()
+      Mastermind.assignWork()
+    }
+
+    if (config.getBoolean("dtc.worker.isActive").exists(identity)){
+      val crawler = new Crawler
       crawler.register()
     }
 

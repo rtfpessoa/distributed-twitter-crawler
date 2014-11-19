@@ -1,17 +1,18 @@
 package worker
 
-import models.{Work, WorkType, WorkTable}
-import play.api.{Logger, Play}
+import models.{WorkTable, WorkType}
 import play.api.Play.current
 import play.api.libs.ws.WS
+import play.api.{Logger, Play}
 
 class Crawler {
 
   def register(): Boolean = {
-    Play.configuration.getString("dtc.master.ip").exists {
+    Play.configuration.getString("dtc.mastermind.ip").exists {
       masterIp =>
-        val myUrl = Play.configuration.getString("http.address").getOrElse("127.0.0.1") + Play.configuration.getInt("http.port").getOrElse(9000)
-        val url = masterIp + controllers.routes.MasterController.addWorker(myUrl)
+        val myUrl = s"http://${Play.configuration.getString("dtc.worker.ip").getOrElse("localhost")}:${Play.configuration.getInt("dtc.worker.port").getOrElse(9000)}"
+        val url = s"http://$masterIp${controllers.routes.MastermindController.addWorker(myUrl)}"
+        println(url)
         WS.url(url).get()
         true
     }

@@ -34,7 +34,7 @@ class WorkTableDef(tag: Tag) extends Table[Work](tag, "Work") with BaseTable[Wor
   lazy val workerId = column[Option[Long]]("workerId", O.Nullable)
   lazy val workType = column[WorkType.Value]("workType", O.NotNull)
   lazy val userId = column[Long]("userId", O.NotNull)
-  lazy val state = column[WorkState.Value]("workId", O.NotNull)
+  lazy val state = column[WorkState.Value]("state", O.NotNull)
   lazy val offset = column[Option[Int]]("offset", O.NotNull)
 
   def * = (id, workerId, workType, userId, state, offset) <>(Work.tupled, Work.unapply)

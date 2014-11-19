@@ -10,8 +10,8 @@ GET        /assets/*file                 controllers.Assets.versioned(path="/pub
 
 
 # Master
-GET        /addWorker/:ip                controllers.MasterController.addWorker(ip: String)
-GET        /workDone/$wid<[0-9]+>        controllers.MasterController.workDone(wid: Long)
+GET        /addWorker/:ip                controllers.MastermindController.addWorker(ip: String)
+GET        /workDone/$wid<[0-9]+>        controllers.MastermindController.workDone(wid: Long)
 
 # Worker
 GET        /newWork/$wid<[0-9]+>         controllers.WorkerController.newWork(wid: Long)
