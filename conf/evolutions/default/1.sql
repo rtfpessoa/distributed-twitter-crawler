@@ -18,6 +18,11 @@ CREATE TABLE "UserTweet" (
   "tweet"  VARCHAR(255)             NOT NULL
 );
 
+CREATE TABLE "Worker" (
+  "id" SERIAL PRIMARY KEY,
+  "ip" VARCHAR(255) NOT NULL
+);
+
 CREATE TABLE "Work" (
   "id"       SERIAL PRIMARY KEY,
   "workType" VARCHAR(255)             NOT NULL,
@@ -25,11 +30,6 @@ CREATE TABLE "Work" (
   "userId"   BIGINT REFERENCES "User" NOT NULL,
   "state"    VARCHAR(255)             NOT NULL,
   "offset"   INT
-);
-
-CREATE TABLE "Worker" (
-  "id" SERIAL PRIMARY KEY,
-  "ip" VARCHAR(255) NOT NULL
 );
 
 -- initial users
