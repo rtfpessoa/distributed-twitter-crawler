@@ -4,6 +4,7 @@ import models._
 import play.api.Play
 import play.api.Play.current
 import play.api.libs.concurrent.Akka
+import scala.concurrent.ExecutionContext.Implicits.global
 
 import scala.concurrent.duration._
 import scala.util.control.NonFatal

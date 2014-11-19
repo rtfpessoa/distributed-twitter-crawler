@@ -8,7 +8,7 @@ object Global extends GlobalSettings {
   private lazy val config = Play.configuration
 
   override def onStart(app: Application) {
-    Logger.info("Distributed Twitter Clients is running")
+    Logger.info("Distributed Twitter Client is running")
 
     if (config.getBoolean("dtc.mastermind").exists(isMastermind => isMastermind)) {
       val mastermind = new Mastermind
@@ -16,7 +16,7 @@ object Global extends GlobalSettings {
       mastermind.assignWork()
     } else {
       val crawler = new Crawler()
-      //      crawler.register()
+      crawler.register()
     }
 
   }
