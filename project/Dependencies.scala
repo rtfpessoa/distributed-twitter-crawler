@@ -7,9 +7,6 @@ object Dependencies {
   lazy val jodaTime       = "joda-time"                 % "joda-time"                    % "2.5"
   lazy val postgresql     = "org.postgresql"            % "postgresql"                   % "9.3-1102-jdbc41"
 
-  //Twitter
-  lazy val twitterApi     = "com.twitter"               % "hbc-core"                     % "2.2.0"
-
   // Codacy
   lazy val playTomcatCP    = "com.codacy"              %% "play-tomcatcp"                % "1.0.0"
 

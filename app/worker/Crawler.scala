@@ -1,23 +1,20 @@
 package worker
 
-import java.util.concurrent.LinkedBlockingQueue
-
-import com.twitter.hbc.ClientBuilder
-import com.twitter.hbc.core.Constants
-import com.twitter.hbc.core.endpoint.{SitestreamEndpoint, UserstreamEndpoint, StatusesSampleEndpoint}
-import com.twitter.hbc.core.event.Event
-import com.twitter.hbc.core.processor.StringDelimitedProcessor
-import com.twitter.hbc.httpclient.auth.OAuth1
-import models.{Work, WorkTable, WorkType}
+import models.{UserTable, Work, WorkTable, WorkType}
 import play.api.Play.current
+import play.api.libs.oauth.{ConsumerKey, OAuthCalculator, RequestToken}
 import play.api.libs.ws.WS
 import play.api.{Logger, Play}
-import scala.collection.JavaConversions._
+
+import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration.{Duration, MINUTES}
 
 object Crawler {
 
   def register(): Unit = {
+    test()
+
     Play.configuration.getString("dtc.mastermind.ip").map {
       masterIp =>
         val myUrl = s"http://${Play.configuration.getString("http.address").getOrElse("127.0.0.1")}:${Play.configuration.getInt("http.port").getOrElse(9000)}"
@@ -43,32 +40,23 @@ object Crawler {
     }
   }
 
-  private def crawlTweets(work: Work) = test()
-
-  private def crawlUserProfile(work: Work) = test()
-
-  private def test(): Unit = {
-    val stringQueue = new LinkedBlockingQueue[String](10000)
-    val eventQueue = new LinkedBlockingQueue[Event](10000)
-
-    val auth = new OAuth1("cGy7r9WibBDFJPubjerLkLZ0J", "MSDYsH1psIXMRIrbm27sHc8PzXcsddVq1298duar59cxRM3ndt",
-      "2884611071-dbeInK4E3OtdZQPeIRdWgBDplXrU9al3IC3q8i9", "lwVsB6KWm3kowf9ikgtZ9h7pMVGmemV7mSoDhfqyaCCPP")
-
-
-    val builder = new ClientBuilder()
-      .hosts(Constants.STREAM_HOST)
-      .endpoint(new SitestreamEndpoint(seqAsJavaList(Seq(21L))))
-      .processor(new StringDelimitedProcessor(stringQueue))
-      .eventMessageQueue(eventQueue)
-      .authentication(auth)
-
-    val hosebirdClient = builder.build()
-
-    hosebirdClient.connect()
-    while (!hosebirdClient.isDone) {
-      val message = stringQueue.take()
-      println(message)
+  private def crawlTweets(work: Work) = {
+    UserTable.getById(work.userId).map {
+      user =>
+        getTweets(user.username, work.offset.getOrElse(100))
     }
+  }
+
+  private def crawlUserProfile(work: Work) = {}
+
+  private def getTweets(username: String, count: Int) = {
+    val consumerKey = ConsumerKey("cGy7r9WibBDFJPubjerLkLZ0J", "MSDYsH1psIXMRIrbm27sHc8PzXcsddVq1298duar59cxRM3ndt")
+    val requestToken = RequestToken("2884611071-dbeInK4E3OtdZQPeIRdWgBDplXrU9al3IC3q8i9", "lwVsB6KWm3kowf9ikgtZ9h7pMVGmemV7mSoDhfqyaCCPP")
+
+    val response = WS.url(s"https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name=$username&count=$count")
+      .sign(OAuthCalculator(consumerKey, requestToken)).get()
+
+    Await.result(response, Duration(1, MINUTES)).json.asOpt[String]
   }
 
 }

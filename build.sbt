@@ -25,6 +25,5 @@ libraryDependencies ++= Seq(
   playTomcatCP,
   jquery,
   slick,
-  akkaActor,
-  twitterApi
+  akkaActor
 )
