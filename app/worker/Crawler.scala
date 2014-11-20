@@ -4,14 +4,15 @@ import java.util.concurrent.LinkedBlockingQueue
 
 import com.twitter.hbc.ClientBuilder
 import com.twitter.hbc.core.Constants
-import com.twitter.hbc.core.endpoint.StatusesSampleEndpoint
+import com.twitter.hbc.core.endpoint.{SitestreamEndpoint, UserstreamEndpoint, StatusesSampleEndpoint}
 import com.twitter.hbc.core.event.Event
 import com.twitter.hbc.core.processor.StringDelimitedProcessor
+import com.twitter.hbc.httpclient.auth.OAuth1
 import models.{Work, WorkTable, WorkType}
 import play.api.Play.current
 import play.api.libs.ws.WS
 import play.api.{Logger, Play}
-
+import scala.collection.JavaConversions._
 import scala.concurrent.ExecutionContext.Implicits.global
 
 object Crawler {
@@ -50,14 +51,16 @@ object Crawler {
     val stringQueue = new LinkedBlockingQueue[String](10000)
     val eventQueue = new LinkedBlockingQueue[Event](10000)
 
-    //    val auth = new OAuth1(consumerKey, consumerSecret, token, secret)
-    //      .authentication(auth)
+    val auth = new OAuth1("cGy7r9WibBDFJPubjerLkLZ0J", "MSDYsH1psIXMRIrbm27sHc8PzXcsddVq1298duar59cxRM3ndt",
+      "2884611071-dbeInK4E3OtdZQPeIRdWgBDplXrU9al3IC3q8i9", "lwVsB6KWm3kowf9ikgtZ9h7pMVGmemV7mSoDhfqyaCCPP")
+
 
     val builder = new ClientBuilder()
       .hosts(Constants.STREAM_HOST)
-      .endpoint(new StatusesSampleEndpoint())
+      .endpoint(new SitestreamEndpoint(seqAsJavaList(Seq(21L))))
       .processor(new StringDelimitedProcessor(stringQueue))
       .eventMessageQueue(eventQueue)
+      .authentication(auth)
 
     val hosebirdClient = builder.build()
 
