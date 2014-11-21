@@ -20,7 +20,7 @@ object Mastermind {
 
     allUsers.collect {
       case user if !allWork.exists(_.userId == user.id) =>
-        WorkTable.create(Work(-1, None, WorkType.UserProfile, user.id, WorkState.New, None))
+       // WorkTable.create(Work(-1, None, WorkType.UserProfile, user.id, WorkState.New, None))
         WorkTable.create(Work(-1, None, WorkType.Tweet, user.id, WorkState.New, None))
     }.nonEmpty
   }
