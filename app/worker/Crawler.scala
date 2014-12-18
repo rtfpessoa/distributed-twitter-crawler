@@ -101,11 +101,13 @@ object Crawler {
   }
 
   private def getFollowers(username: String): Option[Seq[api.User]] = withAPILimit("followers/list") {
-    doRequest(s"followers/list.json?cursor=-1&count=200&screen_name=$username&skip_status=true&include_user_entities=false").asOpt[Seq[api.User]]
+    val json = doRequest(s"followers/list.json?cursor=-1&count=200&screen_name=$username&skip_status=true&include_user_entities=false")
+    (json \ "users").asOpt[Seq[api.User]]
   }
 
   private def getFriends(username: String): Option[Seq[api.User]] = withAPILimit("friends/list") {
-    doRequest(s"friends/list.json?cursor=-1&count=200&screen_name=$username&skip_status=true&include_user_entities=false").asOpt[Seq[api.User]]
+    val json = doRequest(s"friends/list.json?cursor=-1&count=200&screen_name=$username&skip_status=true&include_user_entities=false")
+    (json \ "users").asOpt[Seq[api.User]]
   }
 
 }

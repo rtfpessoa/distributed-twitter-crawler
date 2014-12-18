@@ -8,8 +8,8 @@ CREATE TABLE "User" (
 CREATE TABLE "UserData" (
   "id"        SERIAL PRIMARY KEY,
   "userId"    BIGINT REFERENCES "User" NOT NULL,
-  "followers" INT                      NOT NULL,
-  "following" INT                      NOT NULL
+  "followers" BIGINT                   NOT NULL,
+  "friends"   BIGINT                   NOT NULL
 );
 
 CREATE TABLE "UserTweet" (
