@@ -1,9 +1,7 @@
 package worker
 
 import models._
-import org.joda.time.DateTime
 import play.api.Play.current
-import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads.StringReads
 import play.api.libs.json._
 import play.api.libs.oauth.{ConsumerKey, OAuthCalculator, RequestToken}
@@ -75,73 +73,39 @@ object Crawler {
       UserTweetTable.create(userTweets)
 
       tweets.map(_.mentions).flatten.map {
-        username =>
-          UserTable.create(User(-1, username))
+        apiUser =>
+          val user = UserTable.create(User(-1, apiUser.username))
+          UserDataTable.create(UserData(-1, user.id, apiUser.followersCount, apiUser.friendsCount))
       }
     }
   }
 
-  private def getTweets(username: String, count: Int) = withAPILimit("statuses/user_timeline") {
-    doRequest(s"statuses/user_timeline.json?screen_name=$username&count=$count").asOpt[Seq[Tweet]]
+  private def getTweets(username: String, count: Int): Option[Seq[api.Tweet]] = withAPILimit("statuses/user_timeline") {
+    doRequest(s"statuses/user_timeline.json?screen_name=$username&count=$count").asOpt[Seq[api.Tweet]]
   }
 
   private def crawlUserProfile(work: Work) = {
     UserTable.getById(work.userId).map {
       user =>
-        val followerUsernames = getFollowers(user.username).map(_.usernames).getOrElse(Seq.empty)
-        val friendUsernames = getFriends(user.username).map(_.usernames).getOrElse(Seq.empty)
+        val followers = getFollowers(user.username).getOrElse(Seq.empty)
+        val friends = getFriends(user.username).getOrElse(Seq.empty)
 
-        (followerUsernames ++ friendUsernames).flatMap {
-          username =>
-            Try(UserTable.create(User(-1, username))).toOption
+        (followers ++ friends).flatMap {
+          apiUser =>
+            Try {
+              val user = UserTable.create(User(-1, apiUser.username))
+              UserDataTable.create(UserData(-1, user.id, apiUser.followersCount, apiUser.friendsCount))
+            }.toOption
         }
     }
   }
 
-  private def getFollowers(username: String) = withAPILimit("followers/list") {
-    doRequest(s"followers/list.json?cursor=-1&count=200&screen_name=$username&skip_status=true&include_user_entities=false").asOpt[Users]
+  private def getFollowers(username: String): Option[Seq[api.User]] = withAPILimit("followers/list") {
+    doRequest(s"followers/list.json?cursor=-1&count=200&screen_name=$username&skip_status=true&include_user_entities=false").asOpt[Seq[api.User]]
   }
 
-  private def getFriends(username: String) = withAPILimit("friends/list") {
-    doRequest(s"friends/list.json?cursor=-1&count=200&screen_name=$username&skip_status=true&include_user_entities=false").asOpt[Users]
+  private def getFriends(username: String): Option[Seq[api.User]] = withAPILimit("friends/list") {
+    doRequest(s"friends/list.json?cursor=-1&count=200&screen_name=$username&skip_status=true&include_user_entities=false").asOpt[Seq[api.User]]
   }
 
-}
-
-case class Users(usernames: Seq[String])
-
-object Users {
-  implicit val userReads: Reads[Users] = (JsPath \ "users").read(
-    Reads.seq((JsPath \ "screen_name").read[String])
-  ).map(Users.apply)
-}
-
-case class Location(place: String, placeType: String, country: String)
-
-case class Tweet(tweetId: Long, created_at: DateTime, text: String, urls: Seq[String],
-                 mentions: Seq[String], hashtags: Seq[String], location: Option[Location])
-
-object Tweet {
-  val dateFormat = "E MMM d HH:mm:ss Z y"
-  implicit val jodaDateTimeReads = Reads.jodaDateReads(dateFormat)
-
-  val urlReads = Reads.seq((JsPath \ "expanded_url").read[String])
-  val mentionReads = Reads.seq((JsPath \ "screen_name").read[String])
-  val hashtagReads = Reads.seq((JsPath \ "text").read[String])
-
-  implicit val locationReads: Reads[Location] = (
-    (JsPath \ "name").read[String] and
-      (JsPath \ "place_type").read[String] and
-      (JsPath \ "country").read[String]
-    )(Location.apply _)
-
-  implicit val tweetReads: Reads[Tweet] = (
-    (JsPath \ "id").read[Long] and
-      (JsPath \ "created_at").read[DateTime] and
-      (JsPath \ "text").read[String] and
-      (JsPath \ "entities" \ "urls").read(urlReads) and
-      (JsPath \ "entities" \ "user_mentions").read(mentionReads) and
-      (JsPath \ "entities" \ "hashtags").read(hashtagReads) and
-      (JsPath \ "place").readNullable[Location]
-    )(Tweet.apply _)
 }
