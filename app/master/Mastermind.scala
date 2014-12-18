@@ -3,6 +3,7 @@ package master
 import models._
 import play.api.Play.current
 import play.api.libs.ws.WS
+import rules.APILimitRules._
 
 import scala.util.Try
 
@@ -30,15 +31,16 @@ object Mastermind {
     }.nonEmpty
   }
 
-  def assignWork(workerId: Long): Option[Work] = {
+  def assignWork(workerId: Long): Option[Work] =
     Try {
       WorkTable.listByState(WorkState.New).headOption.map {
         work =>
-          WorkTable.update(work.copy(workerId = Option(workerId)))
-          work
-      }
+          withAPILimit(work) {
+            WorkTable.update(work.copy(workerId = Option(workerId)))
+            work
+          }
+      }.flatten
     }.toOption.flatten
-  }
 
   def registerWorker(ip: String): Worker = {
     WorkerTable.create(Worker(-1, ip))
