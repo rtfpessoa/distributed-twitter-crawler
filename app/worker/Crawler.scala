@@ -87,7 +87,7 @@ object Crawler {
 case class Users(usernames: Seq[String])
 
 object Users {
-  implicit val userReads = (JsPath \ "users").read(
+  implicit val userReads: Reads[Users] = (JsPath \ "users").read(
     Reads.seq((JsPath \ "screen_name").read[String])
   ).map(Users.apply)
 }
