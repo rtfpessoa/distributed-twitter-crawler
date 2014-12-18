@@ -14,6 +14,7 @@ import rules.APILimitRules._
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.{Duration, MINUTES}
+import scala.util.Try
 
 object Crawler {
 
@@ -79,16 +80,19 @@ object Crawler {
         val followerUsernames = getFollowers(user.username).map(_.usernames).getOrElse(Seq.empty)
         val friendUsernames = getFriends(user.username).map(_.usernames).getOrElse(Seq.empty)
 
-        Users(followerUsernames ++ friendUsernames)
+        (followerUsernames ++ friendUsernames).flatMap {
+          username =>
+            Try(UserTable.create(User(-1, username))).toOption
+        }
     }
   }
 
   private def getFollowers(username: String) = withAPILimit("followers/list") {
-    doRequest(s"followers/list.json?cursor=-1&screen_name=$username&skip_status=true&include_user_entities=false").asOpt[Users]
+    doRequest(s"followers/list.json?cursor=-1&count=200&screen_name=$username&skip_status=true&include_user_entities=false").asOpt[Users]
   }
 
   private def getFriends(username: String) = withAPILimit("friends/list") {
-    doRequest(s"friends/list.json?cursor=-1&screen_name=$username&skip_status=true&include_user_entities=false").asOpt[Users]
+    doRequest(s"friends/list.json?cursor=-1&count=200&screen_name=$username&skip_status=true&include_user_entities=false").asOpt[Users]
   }
 
 }
