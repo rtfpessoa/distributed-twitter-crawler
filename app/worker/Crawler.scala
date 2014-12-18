@@ -36,14 +36,14 @@ object Crawler {
       Logger.error(s"Could not get work $workId")
       None
     } {
-      case work if work.workType == WorkType.Tweet =>
-        Logger.info(s"Worker ${work.workerId} starting job ${work.workType}:${work.id}.")
+      case work@Work(_, Some(workerId), WorkType.Tweet, _, _, _) =>
+        Logger.info(s"Worker $workerId starting job ${work.workType}:${work.id}.")
 
         val result = crawlTweets(work)
         Some((work, result.isDefined))
 
-      case work if work.workType == WorkType.UserProfile =>
-        Logger.info(s"Worker ${work.workerId} starting job ${work.workType}:${work.id}.")
+      case work@Work(_, Some(workerId), WorkType.UserProfile, _, _, _) =>
+        Logger.info(s"Worker $workerId starting job ${work.workType}:${work.id}.")
 
         val result = crawlUserProfile(work)
         Some((work, result.isDefined))
