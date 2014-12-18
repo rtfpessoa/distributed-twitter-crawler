@@ -15,7 +15,7 @@ CREATE TABLE "UserData" (
 CREATE TABLE "UserTweet" (
   "id"     SERIAL PRIMARY KEY,
   "userId" BIGINT REFERENCES "User" NOT NULL,
-  "tweet"  VARCHAR(255)             NOT NULL
+  "tweet"  TEXT                     NOT NULL
 );
 
 CREATE TABLE "Worker" (

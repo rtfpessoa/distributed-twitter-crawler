@@ -79,7 +79,7 @@ object Crawler {
     } yield {
       val userTweets = tweets.map {
         tweet =>
-          UserTweet(-1, user.id, tweet.text)
+          UserTweet(-1, user.id, tweet)
       }
       UserTweetTable.create(userTweets)
 
