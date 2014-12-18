@@ -8,7 +8,7 @@ import play.api.libs.json.Reads.StringReads
 import play.api.libs.json._
 import play.api.libs.oauth.{ConsumerKey, OAuthCalculator, RequestToken}
 import play.api.libs.ws.WS
-import play.api.{Play, Logger}
+import play.api.{Logger, Play}
 import rules.APILimitRules
 
 import scala.concurrent.Await
@@ -32,7 +32,7 @@ object Crawler {
               Logger.error(s"Could not register worker: $myUrl")
             } {
               success =>
-              Logger.info(s"Worker registered: $success")
+                Logger.info(s"Worker registered: $success")
             }
         }
     }
@@ -90,9 +90,9 @@ object Crawler {
       }
       UserTweetTable.create(userTweets)
 
-      tweets.map(_.mentions).flatten.map {
+      tweets.map(_.mentions).flatten.flatMap {
         username =>
-          UserTable.create(User(-1, username))
+          Try(UserTable.create(User(-1, username))).toOption
       }
     }
   }
