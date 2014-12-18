@@ -49,10 +49,12 @@ object Mastermind {
   }
 
   def registerWorker(ip: String): Worker = {
+    Logger.info(s"Registering worker from $ip.")
     WorkerTable.create(Worker(-1, ip))
   }
 
   def sendWork(workerId: Long, workId: Long): Unit = {
+    Logger.info(s"Sending work $workId to worker $workerId.")
     WorkerTable.getById(workerId).map {
       worker =>
         WS.url(s"${worker.ip}${controllers.routes.WorkerController.newWork(workId)}").get()
