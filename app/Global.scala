@@ -14,21 +14,21 @@ object Global extends GlobalSettings {
   override def onStart(app: Application) {
     Logger.info("Distributed Twitter Client is running")
 
-//    if (config.getBoolean("dtc.mastermind.isActive").exists(identity)) {
-//      Mastermind.createWork()
-//      Mastermind.assignWork()
-//
-//      val workerDelayDuration = Duration(config.getInt("dtc.work.delay").getOrElse(30), SECONDS)
-//      val workerIntervalDuration = Duration(config.getInt("dtc.work.interval").getOrElse(30), SECONDS)
-//      Akka.system.scheduler.schedule(workerDelayDuration, workerIntervalDuration) {
-//        Mastermind.createWork()
-//        Mastermind.assignWork()
-//      }
-//    }
-//
-//    if (config.getBoolean("dtc.worker.isActive").exists(identity)) {
-//      Crawler.register()
-//    }
+    if (config.getBoolean("dtc.mastermind.isActive").exists(identity)) {
+      Mastermind.createWork()
+      Mastermind.assignWork()
+
+      val workerDelayDuration = Duration(config.getInt("dtc.work.delay").getOrElse(30), SECONDS)
+      val workerIntervalDuration = Duration(config.getInt("dtc.work.interval").getOrElse(30), SECONDS)
+      Akka.system.scheduler.schedule(workerDelayDuration, workerIntervalDuration) {
+        Mastermind.createWork()
+        Mastermind.assignWork()
+      }
+    }
+
+    if (config.getBoolean("dtc.worker.isActive").exists(identity)) {
+      Crawler.register()
+    }
 
   }
 
