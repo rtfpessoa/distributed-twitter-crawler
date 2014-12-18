@@ -24,6 +24,7 @@ libraryDependencies ++= Seq(
   postgresql,
   playTomcatCP,
   jquery,
+  bootstrap,
   slick,
   akkaActor
 )

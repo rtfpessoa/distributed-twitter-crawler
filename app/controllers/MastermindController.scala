@@ -16,7 +16,7 @@ object MastermindController extends Controller {
   }
 
   def workDone(wid: Long) = Action {
-    Ok(views.html.index("Your new application is ready."))
+    Ok(Json.obj("success" -> "ok"))
   }
 
 }

@@ -1,6 +1,6 @@
 package worker
 
-import models.{UserTable, Work, WorkTable, WorkType}
+import models._
 import org.joda.time.DateTime
 import play.api.Play.current
 import play.api.libs.functional.syntax._
@@ -54,9 +54,18 @@ object Crawler {
   }
 
   private def crawlTweets(work: Work) = {
-    UserTable.getById(work.userId).map {
-      user =>
-        getTweets(user.username, work.offset.getOrElse(100))
+    (for {
+      user <- UserTable.getById(work.userId)
+      tweets <- getTweets(user.username, work.offset.getOrElse(100))
+      userTweets = {
+        tweets.map {
+          tweet =>
+            UserTweet(-1, user.id, tweet.text)
+        }
+      }
+    } yield userTweets).map {
+      userTweets =>
+        UserTweetTable.create(userTweets)
     }
   }
 

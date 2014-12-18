@@ -20,5 +20,6 @@ object Dependencies {
 
   //WebJars
   lazy val jquery         = "org.webjars"               % "jquery"                       % "2.1.1"
+  lazy val bootstrap      = "org.webjars"               % "bootstrap"                    % "3.3.1"
 
 }
