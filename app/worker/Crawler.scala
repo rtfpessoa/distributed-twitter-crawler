@@ -1,12 +1,14 @@
 package worker
 
+import java.net.InetAddress
+
 import models._
 import play.api.Play.current
 import play.api.libs.json.Reads.StringReads
 import play.api.libs.json._
 import play.api.libs.oauth.{ConsumerKey, OAuthCalculator, RequestToken}
 import play.api.libs.ws.WS
-import play.api.{Logger, Play}
+import play.api.{Play, Logger}
 import rules.APILimitRules
 
 import scala.concurrent.Await
@@ -16,10 +18,13 @@ import scala.util.Try
 
 object Crawler {
 
+  private lazy val config = Play.configuration
+
   def register(): Unit = {
-    Play.configuration.getString("dtc.mastermind.ip").map {
+    config.getString("dtc.mastermind.ip").map {
       masterIp =>
-        val myUrl = s"http://${Play.configuration.getString("http.address").getOrElse("127.0.0.1")}:${Play.configuration.getInt("http.port").getOrElse(9000)}"
+        val myIp = Option(InetAddress.getLocalHost.getHostAddress)
+        val myUrl = s"http://${myIp.getOrElse("127.0.0.1")}:${config.getInt("http.port").getOrElse(9000)}"
         val url = s"http://$masterIp${controllers.routes.MastermindController.addWorker(myUrl)}"
         WS.url(url).get().map {
           response =>
