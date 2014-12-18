@@ -6,7 +6,7 @@ import scala.slick.driver.PostgresDriver.simple._
 import scala.slick.jdbc.JdbcBackend.Database.dynamicSession
 
 object WorkState extends Enumeration {
-  val New, Working, Completed = Value
+  val New, Working, Completed, Error = Value
 }
 
 object WorkType extends Enumeration {

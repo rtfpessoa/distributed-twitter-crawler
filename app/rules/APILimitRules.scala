@@ -23,6 +23,7 @@ object APILimitRules {
     }
 
     if (window.requests < maxRequests) {
+      APILimitTable.update(currentWindow.copy(requests = currentWindow.requests + 1))
       block
     } else {
       None

@@ -34,13 +34,22 @@ object Crawler {
   }
 
   def newWork(workId: Long) = {
-    WorkTable.getById(workId) match {
-      case Some(work) if work.workType == WorkType.Tweet =>
-        crawlTweets(work)
-      case Some(work) if work.workType == WorkType.UserProfile =>
-        crawlUserProfile(work)
-      case _ =>
-        Logger.error(s"Could not get work $workId")
+    WorkTable.getById(workId).fold[Option[(Work, Boolean)]] {
+      Logger.error(s"Could not get work $workId")
+      None
+    } {
+      case work if work.workType == WorkType.Tweet =>
+        val result = crawlTweets(work)
+        Some((work, result.isDefined))
+
+      case work if work.workType == WorkType.UserProfile =>
+        val result = crawlUserProfile(work)
+        Some((work, result.isDefined))
+    }.map {
+      case (work, true) =>
+        WorkTable.update(work.copy(state = WorkState.Completed))
+      case (work, false) =>
+        WorkTable.update(work.copy(state = WorkState.Error))
     }
   }
 

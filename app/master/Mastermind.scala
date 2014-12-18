@@ -24,7 +24,8 @@ object Mastermind {
     val allWork = WorkTable.list()
 
     allWorkers.collect {
-      case worker if !allWork.exists(_.workerId.contains(worker.id)) =>
+      case worker if allWork.exists(w => !w.workerId.contains(worker.id) &&
+        !Seq(WorkState.New, WorkState.Working).contains(w.state)) =>
         assignWork(worker.id)
     }.nonEmpty
   }
