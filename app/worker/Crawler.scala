@@ -43,6 +43,16 @@ object Crawler {
     }
   }
 
+  private def doRequest(endpoint: String): JsValue = {
+    val consumerKey = ConsumerKey("cGy7r9WibBDFJPubjerLkLZ0J", "MSDYsH1psIXMRIrbm27sHc8PzXcsddVq1298duar59cxRM3ndt")
+    val requestToken = RequestToken("2884611071-dbeInK4E3OtdZQPeIRdWgBDplXrU9al3IC3q8i9", "lwVsB6KWm3kowf9ikgtZ9h7pMVGmemV7mSoDhfqyaCCPP")
+
+    val response = WS.url(s"https://api.twitter.com/1.1/$endpoint")
+      .sign(OAuthCalculator(consumerKey, requestToken)).get()
+
+    Await.result(response, Duration(1, MINUTES)).json
+  }
+
   private def crawlTweets(work: Work) = {
     UserTable.getById(work.userId).map {
       user =>
@@ -50,18 +60,36 @@ object Crawler {
     }
   }
 
-  private def crawlUserProfile(work: Work) = {}
-
   private def getTweets(username: String, count: Int) = withAPILimit("statuses/user_timeline") {
-    val consumerKey = ConsumerKey("cGy7r9WibBDFJPubjerLkLZ0J", "MSDYsH1psIXMRIrbm27sHc8PzXcsddVq1298duar59cxRM3ndt")
-    val requestToken = RequestToken("2884611071-dbeInK4E3OtdZQPeIRdWgBDplXrU9al3IC3q8i9", "lwVsB6KWm3kowf9ikgtZ9h7pMVGmemV7mSoDhfqyaCCPP")
-
-    val response = WS.url(s"https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name=$username&count=$count")
-      .sign(OAuthCalculator(consumerKey, requestToken)).get()
-
-    Await.result(response, Duration(1, MINUTES)).json.asOpt[List[Tweet]]
+    doRequest(s"statuses/user_timeline.json?screen_name=$username&count=$count").asOpt[Seq[Tweet]]
   }
 
+  private def crawlUserProfile(work: Work) = {
+    UserTable.getById(work.userId).map {
+      user =>
+        val followerUsernames = getFollowers(user.username).map(_.usernames).getOrElse(Seq.empty)
+        val friendUsernames = getFriends(user.username).map(_.usernames).getOrElse(Seq.empty)
+
+        Users(followerUsernames ++ friendUsernames)
+    }
+  }
+
+  private def getFollowers(username: String) = withAPILimit("followers/list") {
+    doRequest(s"followers/list.json?cursor=-1&screen_name=$username&skip_status=true&include_user_entities=false").asOpt[Users]
+  }
+
+  private def getFriends(username: String) = withAPILimit("friends/list") {
+    doRequest(s"friends/list.json?cursor=-1&screen_name=$username&skip_status=true&include_user_entities=false").asOpt[Users]
+  }
+
+}
+
+case class Users(usernames: Seq[String])
+
+object Users {
+  implicit val userReads = (JsPath \ "users").read(
+    Reads.seq((JsPath \ "screen_name").read[String])
+  ).map(Users.apply)
 }
 
 case class Location(place: String, placeType: String, country: String)

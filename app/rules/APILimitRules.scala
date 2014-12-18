@@ -10,10 +10,10 @@ object APILimitRules {
   private lazy val config = Play.configuration
   private lazy val defaultWindowDuration = Duration.standardMinutes(15)
 
-  def withAPILimit[A](endpoint: String)(block: => A): Option[A] = {
+  def withAPILimit[A](endpoint: String)(block: => Option[A]): Option[A] = {
     val maxRequests = config.getInt(s"dtc.limit.$endpoint").getOrElse(0)
 
-    APILimitTable.getLatestWindow(endpoint).map {
+    APILimitTable.getLatestWindow(endpoint).flatMap {
       currentWindow =>
         val window = if (currentWindow.windowStart.plus(defaultWindowDuration).isAfterNow) {
           currentWindow
