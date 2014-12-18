@@ -55,18 +55,20 @@ object Crawler {
   }
 
   private def crawlTweets(work: Work) = {
-    (for {
+    for {
       user <- UserTable.getById(work.userId)
       tweets <- getTweets(user.username, work.offset.getOrElse(100))
-      userTweets = {
-        tweets.map {
-          tweet =>
-            UserTweet(-1, user.id, tweet.text)
-        }
+    } yield {
+      val userTweets = tweets.map {
+        tweet =>
+          UserTweet(-1, user.id, tweet.text)
       }
-    } yield userTweets).map {
-      userTweets =>
-        UserTweetTable.create(userTweets)
+      UserTweetTable.create(userTweets)
+
+      tweets.map(_.mentions).flatten.map {
+        username =>
+          UserTable.create(User(-1, username))
+      }
     }
   }
 
