@@ -80,9 +80,8 @@ object Crawler {
       UserTweetTable.create(userTweets)
 
       tweets.map(_.mentions).flatten.map {
-        apiUser =>
-          val user = UserTable.create(User(-1, apiUser.username))
-          UserDataTable.create(UserData(-1, user.id, apiUser.followersCount, apiUser.friendsCount))
+        username =>
+          UserTable.create(User(-1, username))
       }
     }
   }
