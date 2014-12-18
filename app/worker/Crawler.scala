@@ -9,6 +9,7 @@ import play.api.libs.json._
 import play.api.libs.oauth.{ConsumerKey, OAuthCalculator, RequestToken}
 import play.api.libs.ws.WS
 import play.api.{Logger, Play}
+import rules.APILimitRules._
 
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -51,7 +52,7 @@ object Crawler {
 
   private def crawlUserProfile(work: Work) = {}
 
-  private def getTweets(username: String, count: Int) = {
+  private def getTweets(username: String, count: Int) = withAPILimit("statuses/user_timeline") {
     val consumerKey = ConsumerKey("cGy7r9WibBDFJPubjerLkLZ0J", "MSDYsH1psIXMRIrbm27sHc8PzXcsddVq1298duar59cxRM3ndt")
     val requestToken = RequestToken("2884611071-dbeInK4E3OtdZQPeIRdWgBDplXrU9al3IC3q8i9", "lwVsB6KWm3kowf9ikgtZ9h7pMVGmemV7mSoDhfqyaCCPP")
 

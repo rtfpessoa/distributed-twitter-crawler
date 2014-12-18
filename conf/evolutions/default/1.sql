@@ -32,6 +32,13 @@ CREATE TABLE "Work" (
   "offset"   INT
 );
 
+CREATE TABLE "APILimit" (
+  "id"          SERIAL PRIMARY KEY,
+  "endpoint"    VARCHAR(255) NOT NULL,
+  "windowStart" TIMESTAMP    NOT NULL,
+  "requests"    INT          NOT NULL DEFAULT 0
+);
+
 -- initial users
 
 INSERT INTO "User" ("username") VALUES ('rtfpessoa');
