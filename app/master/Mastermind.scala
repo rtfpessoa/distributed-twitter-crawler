@@ -1,18 +1,12 @@
 package master
 
 import models._
-import play.api.Play
 import play.api.Play.current
-import play.api.libs.concurrent.Akka
 import play.api.libs.ws.WS
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.duration._
-import scala.util.control.NonFatal
+import scala.util.Try
 
 object Mastermind {
-
-  private lazy val config = Play.configuration
 
   def createWork(): Boolean = {
     val allWork = WorkTable.list()
@@ -36,24 +30,13 @@ object Mastermind {
   }
 
   def assignWork(workerId: Long): Option[Work] = {
-    val result = try {
+    Try {
       WorkTable.listByState(WorkState.New).headOption.map {
         work =>
           WorkTable.update(work.copy(workerId = Option(workerId)))
           work
       }
-    } catch {
-      case NonFatal(_) =>
-        assignWork(workerId)
-        Option.empty
-    }
-
-    val workerDelayDuration = Duration(config.getInt("dtc.work.delay").getOrElse(30), SECONDS)
-    Akka.system.scheduler.scheduleOnce(workerDelayDuration) {
-      assignWork()
-    }
-
-    result
+    }.toOption.flatten
   }
 
   def registerWorker(ip: String): Worker = {
