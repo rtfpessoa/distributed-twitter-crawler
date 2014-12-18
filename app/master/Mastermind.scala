@@ -21,12 +21,12 @@ object Mastermind {
       case worker if allWork.exists(_.workerId.getOrElse(-1) == worker.id) && worker.heartbeat.plusMinutes(1).isBeforeNow =>
         Logger.info(s"Removing worker ${worker.id}.")
 
-        WorkerTable.deleteById(worker.id)
-
         allWork.filter(_.workerId.getOrElse(-1) == worker.id).map {
           work =>
-            WorkTable.update(work.copy(workerId = None, state = WorkState.Error))
+            WorkTable.update(work.copy(state = WorkState.Error))
         }
+
+        WorkerTable.deleteById(worker.id)
     }.nonEmpty
   }
 

@@ -27,7 +27,7 @@ CREATE TABLE "Worker" (
 CREATE TABLE "Work" (
   "id"       SERIAL PRIMARY KEY,
   "workType" VARCHAR(255)             NOT NULL,
-  "workerId" BIGINT REFERENCES "Worker",
+  "workerId" BIGINT REFERENCES "Worker" ON DELETE SET NULL,
   "userId"   BIGINT REFERENCES "User" NOT NULL,
   "state"    VARCHAR(255)             NOT NULL,
   "offset"   INT
