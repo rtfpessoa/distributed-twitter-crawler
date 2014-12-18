@@ -1,6 +1,6 @@
 package models
 
-import models.traits.{GenericDB, BaseTable, BaseTableQueryOps}
+import models.traits.{BaseTable, BaseTableQueryOps, GenericDB}
 import org.joda.time.DateTime
 
 import scala.slick.driver.PostgresDriver.simple._
@@ -21,5 +21,11 @@ object WorkerTable extends TableQuery(new WorkerTableDef(_)) with BaseTableQuery
   self =>
 
   lazy val db = GenericDB
+
+  def getByIp(ip: String): Option[Worker] = {
+    db.withSession {
+      self.filter(_.ip === ip).firstOption
+    }
+  }
 
 }

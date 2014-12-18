@@ -18,10 +18,10 @@ object Mastermind {
     val allWorkers = WorkerTable.list()
 
     allWorkers.collect {
-      case worker if allWork.exists(_.workerId.getOrElse(-1) == worker.id) && worker.heartbeat.plusMinutes(1).isBeforeNow =>
+      case worker if allWork.exists(_.workerId.contains(worker.id)) && worker.heartbeat.plusMinutes(1).isBeforeNow =>
         Logger.info(s"Removing worker ${worker.id}.")
 
-        allWork.filter(_.workerId.getOrElse(-1) == worker.id).map {
+        allWork.filter(_.workerId.contains(worker.id)).map {
           work =>
             WorkTable.update(work.copy(state = WorkState.Error))
         }
@@ -62,7 +62,9 @@ object Mastermind {
     Try {
       WorkTable.listByState(WorkState.New).collectFirst {
         case work if !APILimitRules.isLimited(work) =>
-          WorkTable.update(work.copy(workerId = Option(workerId)))
+          WorkerTable.getById(workerId).map { _ =>
+            WorkTable.update(work.copy(workerId = Option(workerId)))
+          }
           work
       }
     }.toOption.flatten.fold[Option[Work]] {
