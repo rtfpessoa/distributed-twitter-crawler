@@ -22,6 +22,7 @@ object MastermindController extends Controller {
   def workDone(workerId: Long) = Action {
     Logger.info(s"Worker $workerId finished a job.")
 
+    Mastermind.createWork()
     Mastermind.assignWork(workerId).map {
       work =>
         Mastermind.sendWork(workerId, work.id)
