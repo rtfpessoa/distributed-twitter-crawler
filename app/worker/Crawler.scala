@@ -7,7 +7,7 @@ import play.api.libs.json._
 import play.api.libs.oauth.{ConsumerKey, OAuthCalculator, RequestToken}
 import play.api.libs.ws.WS
 import play.api.{Logger, Play}
-import rules.APILimitRules._
+import rules.APILimitRules
 
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -36,17 +36,21 @@ object Crawler {
       Logger.error(s"Could not get work $workId")
       None
     } {
-      case work@Work(_, Some(workerId), WorkType.Tweet, _, _, _) =>
+      case work@Work(_, Some(workerId), WorkType.Tweet, _, _, _) if !APILimitRules.isLimited(work) =>
         Logger.info(s"Worker $workerId starting job ${work.workType}:${work.id}.")
 
         val result = crawlTweets(work)
         Some((work, result.isDefined))
 
-      case work@Work(_, Some(workerId), WorkType.UserProfile, _, _, _) =>
+      case work@Work(_, Some(workerId), WorkType.UserProfile, _, _, _) if !APILimitRules.isLimited(work) =>
         Logger.info(s"Worker $workerId starting job ${work.workType}:${work.id}.")
 
         val result = crawlUserProfile(work)
         Some((work, result.isDefined))
+
+      case _ =>
+        Logger.error(s"Work $workId was API limited.")
+        None
 
     }.map {
       case (work, true) =>
@@ -86,7 +90,7 @@ object Crawler {
     }
   }
 
-  private def getTweets(username: String, count: Int): Option[Seq[api.Tweet]] = withAPILimit("statuses/user_timeline") {
+  private def getTweets(username: String, count: Int): Option[Seq[api.Tweet]] = APILimitRules.withAPILimit("statuses/user_timeline") {
     doRequest(s"statuses/user_timeline.json?screen_name=$username&count=$count").asOpt[Seq[api.Tweet]]
   }
 
@@ -106,12 +110,12 @@ object Crawler {
     }
   }
 
-  private def getFollowers(username: String): Option[Seq[api.User]] = withAPILimit("followers/list") {
+  private def getFollowers(username: String): Option[Seq[api.User]] = APILimitRules.withAPILimit("followers/list") {
     val json = doRequest(s"followers/list.json?cursor=-1&count=200&screen_name=$username&skip_status=true&include_user_entities=false")
     (json \ "users").asOpt[Seq[api.User]]
   }
 
-  private def getFriends(username: String): Option[Seq[api.User]] = withAPILimit("friends/list") {
+  private def getFriends(username: String): Option[Seq[api.User]] = APILimitRules.withAPILimit("friends/list") {
     val json = doRequest(s"friends/list.json?cursor=-1&count=200&screen_name=$username&skip_status=true&include_user_entities=false")
     (json \ "users").asOpt[Seq[api.User]]
   }

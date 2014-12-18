@@ -1,15 +1,18 @@
 package master
 
 import models._
+import play.api.Logger
 import play.api.Play.current
 import play.api.libs.ws.WS
-import rules.APILimitRules._
+import rules.APILimitRules
 
 import scala.util.Try
 
 object Mastermind {
 
   def createWork(): Boolean = {
+    Logger.info(s"Creating new work.")
+
     val allWork = WorkTable.list()
     val allUsers = UserTable.list()
 
@@ -21,6 +24,8 @@ object Mastermind {
   }
 
   def assignWork(): Boolean = {
+    Logger.info(s"Assigning work.")
+
     val allWorkers = WorkerTable.list()
     val allWork = WorkTable.list()
 
@@ -31,16 +36,17 @@ object Mastermind {
     }.nonEmpty
   }
 
-  def assignWork(workerId: Long): Option[Work] =
+  def assignWork(workerId: Long): Option[Work] = {
+    Logger.info(s"Assigning work to Worker $workerId.")
+
     Try {
-      WorkTable.listByState(WorkState.New).headOption.map {
-        work =>
-          withAPILimit(work) {
-            WorkTable.update(work.copy(workerId = Option(workerId)))
-            work
-          }
-      }.flatten
+      WorkTable.listByState(WorkState.New).collectFirst {
+        case work if !APILimitRules.isLimited(work) =>
+          WorkTable.update(work.copy(workerId = Option(workerId)))
+          work
+      }
     }.toOption.flatten
+  }
 
   def registerWorker(ip: String): Worker = {
     WorkerTable.create(Worker(-1, ip))
