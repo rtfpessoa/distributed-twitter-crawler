@@ -21,6 +21,7 @@ object Global extends GlobalSettings {
       val workerDelayDuration = Duration(config.getInt("dtc.work.delay").getOrElse(30), SECONDS)
       val workerIntervalDuration = Duration(config.getInt("dtc.work.interval").getOrElse(30), SECONDS)
       Akka.system.scheduler.schedule(workerDelayDuration, workerIntervalDuration) {
+        Mastermind.maintainWorkers()
         Mastermind.createWork()
         Mastermind.assignWork()
       }

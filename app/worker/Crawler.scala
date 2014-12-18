@@ -23,9 +23,11 @@ object Crawler {
         val url = s"http://$masterIp${controllers.routes.MastermindController.addWorker(myUrl)}"
         WS.url(url).get().map {
           response =>
-            (response.json \ "success").asOpt[String].getOrElse {
+            (response.json \ "success").asOpt[String].fold {
               Logger.error(s"Could not register worker: $myUrl")
-              sys.exit(1)
+            } {
+              success =>
+              Logger.info(s"Worker registered: $success")
             }
         }
     }

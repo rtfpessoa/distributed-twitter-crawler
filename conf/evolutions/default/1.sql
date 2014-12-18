@@ -19,8 +19,9 @@ CREATE TABLE "UserTweet" (
 );
 
 CREATE TABLE "Worker" (
-  "id" SERIAL PRIMARY KEY,
-  "ip" VARCHAR(255) NOT NULL
+  "id"        SERIAL PRIMARY KEY,
+  "ip"        VARCHAR(255) NOT NULL,
+  "heartbeat" TIMESTAMP    NOT NULL
 );
 
 CREATE TABLE "Work" (

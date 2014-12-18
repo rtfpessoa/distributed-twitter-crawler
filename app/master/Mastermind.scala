@@ -1,6 +1,7 @@
 package master
 
 import models._
+import org.joda.time.DateTime
 import play.api.Logger
 import play.api.Play.current
 import play.api.libs.ws.WS
@@ -9,6 +10,25 @@ import rules.APILimitRules
 import scala.util.Try
 
 object Mastermind {
+
+  def maintainWorkers(): Boolean = {
+    Logger.info(s"Maintaining workers.")
+
+    val allWork = WorkTable.list()
+    val allWorkers = WorkerTable.list()
+
+    allWorkers.collect {
+      case worker if allWork.exists(_.workerId == worker.id) && worker.heartbeat.plusMinutes(1).isBeforeNow =>
+        Logger.info(s"Removing worker ${worker.id}.")
+
+        WorkerTable.deleteById(worker.id)
+
+        allWork.filter(_.workerId == worker.id).map {
+          work =>
+            WorkTable.update(work.copy(workerId = None, state = WorkState.Error))
+        }
+    }.nonEmpty
+  }
 
   def createWork(): Boolean = {
     Logger.info(s"Creating new work.")
@@ -45,12 +65,15 @@ object Mastermind {
           WorkTable.update(work.copy(workerId = Option(workerId)))
           work
       }
-    }.toOption.flatten
+    }.toOption.flatten.fold[Option[Work]] {
+      Logger.info(s"No work for worker $workerId.")
+      None
+    }(w => Some(w))
   }
 
   def registerWorker(ip: String): Worker = {
     Logger.info(s"Registering worker from $ip.")
-    WorkerTable.create(Worker(-1, ip))
+    WorkerTable.create(Worker(-1, ip, DateTime.now()))
   }
 
   def sendWork(workerId: Long, workId: Long): Unit = {
