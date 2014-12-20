@@ -2,11 +2,12 @@ package models
 
 import api.{Location, Tweet}
 import models.traits.{BaseTable, BaseTableQueryOps, GenericDB}
+import org.joda.time.DateTime
 import play.api.libs.json.{Format, Json}
 
 import scala.slick.driver.PostgresDriver.simple._
 
-case class UserTweet(id: Long, userId: Long, tweet: Tweet) {
+case class UserTweet(id: Long, userId: Long, tweet: Tweet, timestamp: DateTime) {
   val user = UserTable.getById(userId)
 }
 
@@ -23,8 +24,9 @@ class UserTweetTableDef(tag: Tag) extends Table[UserTweet](tag, "UserTweet") wit
 
   lazy val userId = column[Long]("userId", O.NotNull)
   lazy val tweet = column[Tweet]("tweet", O.NotNull)
+  lazy val timestamp = column[DateTime]("timestamp", O.NotNull)
 
-  def * = (id, userId, tweet) <>(UserTweet.tupled, UserTweet.unapply)
+  def * = (id, userId, tweet, timestamp) <>(UserTweet.tupled, UserTweet.unapply)
 
 }
 

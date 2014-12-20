@@ -1,8 +1,9 @@
 # --- !Ups
 
 CREATE TABLE "User" (
-  "id"       SERIAL PRIMARY KEY,
-  "username" VARCHAR(255) NOT NULL UNIQUE
+  "id"        SERIAL PRIMARY KEY,
+  "username"  VARCHAR(255) NOT NULL UNIQUE,
+  "timestamp" TIMESTAMP    NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE "UserData" (
@@ -13,9 +14,10 @@ CREATE TABLE "UserData" (
 );
 
 CREATE TABLE "UserTweet" (
-  "id"     SERIAL PRIMARY KEY,
-  "userId" BIGINT REFERENCES "User" NOT NULL,
-  "tweet"  TEXT                     NOT NULL
+  "id"        SERIAL PRIMARY KEY,
+  "userId"    BIGINT REFERENCES "User" NOT NULL,
+  "tweet"     TEXT                     NOT NULL,
+  "timestamp" TIMESTAMP                NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE "Worker" (

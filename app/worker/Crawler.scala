@@ -3,6 +3,7 @@ package worker
 import java.net.InetAddress
 
 import models._
+import org.joda.time.DateTime
 import play.api.Play.current
 import play.api.libs.json.Reads.StringReads
 import play.api.libs.json._
@@ -80,19 +81,21 @@ object Crawler {
   }
 
   private def crawlTweets(work: Work) = {
+    val timestamp = DateTime.now()
+
     for {
       user <- UserTable.getById(work.userId)
       tweets <- getTweets(user.username, work.offset.getOrElse(100))
     } yield {
       val userTweets = tweets.map {
         tweet =>
-          UserTweet(-1, user.id, tweet)
+          UserTweet(-1, user.id, tweet, timestamp)
       }
       UserTweetTable.create(userTweets)
 
       tweets.map(_.mentions).flatten.flatMap {
         username =>
-          Try(UserTable.create(User(-1, username))).toOption
+          Try(UserTable.create(User(-1, username, timestamp))).toOption
       }
     }
   }
@@ -110,7 +113,8 @@ object Crawler {
         (followers ++ friends).flatMap {
           apiUser =>
             Try {
-              val user = UserTable.create(User(-1, apiUser.username))
+              val timestamp = DateTime.now()
+              val user = UserTable.create(User(-1, apiUser.username, timestamp))
               UserDataTable.create(UserData(-1, user.id, apiUser.followersCount, apiUser.friendsCount))
             }.toOption
         }

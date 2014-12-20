@@ -1,17 +1,18 @@
 package models
 
-import models.traits.{GenericDB, BaseTable, BaseTableQueryOps}
+import models.traits.{BaseTable, BaseTableQueryOps, GenericDB}
+import org.joda.time.DateTime
 
 import scala.slick.driver.PostgresDriver.simple._
-import scala.slick.jdbc.JdbcBackend.Database.dynamicSession
 
-case class User(id: Long, username: String)
+case class User(id: Long, username: String, timestamp: DateTime)
 
 class UserTableDef(tag: Tag) extends Table[User](tag, "User") with BaseTable[User] {
 
   lazy val username = column[String]("username", O.NotNull)
+  lazy val timestamp = column[DateTime]("timestamp", O.NotNull)
 
-  def * = (id, username) <>(User.tupled, User.unapply)
+  def * = (id, username, timestamp) <>(User.tupled, User.unapply)
 
 }
 
