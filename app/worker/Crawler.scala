@@ -93,7 +93,9 @@ object Crawler {
       }
       UserTweetTable.create(userTweets)
 
-      tweets.map(_.mentions).flatten.flatMap {
+      val allUsers = UserTable.list().map(_.username)
+
+      tweets.map(_.mentions).flatten.distinct.filterNot(allUsers.contains).flatMap {
         username =>
           Try(UserTable.create(User(-1, username, timestamp))).toOption
       }
@@ -110,7 +112,11 @@ object Crawler {
         val followers = getFollowers(user.username).getOrElse(Seq.empty)
         val friends = getFriends(user.username).getOrElse(Seq.empty)
 
-        (followers ++ friends).flatMap {
+        val allUsers = UserTable.list().map(_.username)
+
+        val uniqueUsers = (followers ++ friends).groupBy(_.username).flatMap { case (_, users) => users.headOption}
+
+        uniqueUsers.filterNot(apiUser => allUsers.contains(apiUser.username)).flatMap {
           apiUser =>
             Try {
               val timestamp = DateTime.now()
