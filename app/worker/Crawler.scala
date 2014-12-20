@@ -116,8 +116,8 @@ object Crawler {
 
         val uniqueUsers = (followers ++ friends).groupBy(_.username).flatMap { case (_, users) => users.headOption}
 
-        uniqueUsers.filterNot(apiUser => allUsers.contains(apiUser.username)).flatMap {
-          apiUser =>
+        uniqueUsers.collect {
+          case apiUser if !allUsers.contains(apiUser.username) =>
             Try {
               val timestamp = DateTime.now()
               val user = UserTable.create(User(-1, apiUser.username, timestamp))
