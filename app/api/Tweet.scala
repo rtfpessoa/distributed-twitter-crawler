@@ -5,7 +5,7 @@ import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads.StringReads
 import play.api.libs.json.{JsPath, Reads}
 
-case class Tweet(tweetId: Long, created_at: DateTime, text: String, urls: Seq[String],
+case class Tweet(twitterId: Long, created_at: DateTime, text: String, urls: Seq[String],
                  mentions: Seq[String], hashtags: Seq[String], location: Option[Location])
 
 object Tweet {

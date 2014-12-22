@@ -21,6 +21,8 @@ object Crawler {
 
   private lazy val config = Play.configuration
 
+  private val beginingOfTime = new DateTime("1980-01-01 00:00:00.097000")
+
   def register(): Unit = {
     config.getString("dtc.mastermind.ip").map {
       masterIp =>
@@ -85,11 +87,12 @@ object Crawler {
 
     for {
       user <- UserTable.getById(work.userId)
-      tweets <- getTweets(user.username, work.offset.getOrElse(100))
+      maxTwitterId = UserTweetTable.getMaxTwitterId(user.id)
+      tweets <- getTweets(user.username, work.offset.getOrElse(100), maxTwitterId)
     } yield {
       val userTweets = UserTweetTable.createAndReturn(tweets.map {
         tweet =>
-          UserTweet(-1, user.id, tweet, timestamp)
+          UserTweet(-1, tweet.twitterId, user.id, tweet, timestamp)
       })
 
       HashtagTable.create(userTweets.map {
@@ -112,13 +115,14 @@ object Crawler {
 
       tweets.map(_.mentions).flatten.distinct.filterNot(allUsers.contains).flatMap {
         username =>
-          Try(UserTable.create(User(-1, username, timestamp))).toOption
+          Try(UserTable.create(User(-1, username, timestamp, beginingOfTime, 0L))).toOption
       }
     }
   }
 
-  private def getTweets(username: String, count: Int): Option[Seq[api.Tweet]] = APILimitRules.withAPILimit("statuses/user_timeline") {
-    doRequest(s"statuses/user_timeline.json?screen_name=$username&count=$count").asOpt[Seq[api.Tweet]]
+  private def getTweets(username: String, count: Int, maxTwitterTweetId: Option[Long]): Option[Seq[api.Tweet]] = APILimitRules.withAPILimit("statuses/user_timeline") {
+    val maxPreviousId = maxTwitterTweetId.getOrElse(0l)
+    doRequest(s"statuses/user_timeline.json?screen_name=$username&count=$count&since_id=$maxPreviousId").asOpt[Seq[api.Tweet]]
   }
 
   private def crawlUserProfile(work: Work) = {
@@ -135,7 +139,7 @@ object Crawler {
           case apiUser if !allUsers.contains(apiUser.username) =>
             Try {
               val timestamp = DateTime.now()
-              val user = UserTable.create(User(-1, apiUser.username, timestamp))
+              val user = UserTable.create(User(-1, apiUser.username, timestamp, beginingOfTime, 0L))
               UserDataTable.create(UserData(-1, user.id, apiUser.followersCount, apiUser.friendsCount))
             }.toOption
         }

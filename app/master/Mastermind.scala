@@ -33,13 +33,13 @@ object Mastermind {
   def createWork(): Boolean = {
     Logger.info(s"Creating new work.")
 
-    val allWork = WorkTable.list()
-    val allUsers = UserTable.list()
+    val allUsers = UserTable.listUsersToCrawl
 
-    allUsers.collect {
-      case user if !allWork.exists(_.userId == user.id) =>
-        WorkTable.create(Work(-1, None, WorkType.UserProfile, user.id, WorkState.New, None))
-        WorkTable.create(Work(-1, None, WorkType.Tweet, user.id, WorkState.New, None))
+    allUsers.map {
+      user =>
+        UserTable.updateLastUpdate(user.id)
+        WorkTable.create(Seq(Work(-1, None, WorkType.UserProfile, user.id, WorkState.New, None),
+          Work(-1, None, WorkType.Tweet, user.id, WorkState.New, None)))
     }.nonEmpty
   }
 

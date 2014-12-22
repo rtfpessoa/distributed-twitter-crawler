@@ -1,9 +1,11 @@
 # --- !Ups
 
 CREATE TABLE "User" (
-  "id"        SERIAL PRIMARY KEY,
-  "username"  VARCHAR(255) NOT NULL UNIQUE,
-  "timestamp" TIMESTAMP    NOT NULL DEFAULT NOW()
+  "id"         SERIAL PRIMARY KEY,
+  "username"   VARCHAR(255) NOT NULL UNIQUE,
+  "timestamp"  TIMESTAMP    NOT NULL DEFAULT NOW(),
+  "lastUpdate" TIMESTAMP    NOT NULL DEFAULT '1980-01-01 00:00:00.097000',
+  "nrUpdates"  BIGINT       NOT NULL
 );
 
 CREATE TABLE "UserData" (
@@ -15,6 +17,7 @@ CREATE TABLE "UserData" (
 
 CREATE TABLE "UserTweet" (
   "id"        SERIAL PRIMARY KEY,
+  "twitterId" BIGSERIAL                NOT NULL,
   "userId"    BIGINT REFERENCES "User" NOT NULL,
   "tweet"     TEXT                     NOT NULL,
   "timestamp" TIMESTAMP                NOT NULL DEFAULT NOW()

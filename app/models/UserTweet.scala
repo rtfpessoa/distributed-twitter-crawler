@@ -8,7 +8,7 @@ import play.api.libs.json.{Format, Json}
 import scala.slick.driver.PostgresDriver.simple._
 import scala.slick.jdbc.JdbcBackend.Database.dynamicSession
 
-case class UserTweet(id: Long, userId: Long, tweet: Tweet, timestamp: DateTime) {
+case class UserTweet(id: Long, twitterId: Long, userId: Long, tweet: Tweet, timestamp: DateTime) {
   val user = UserTable.getById(userId)
 }
 
@@ -23,11 +23,12 @@ trait TweetTableMappers {
 
 class UserTweetTableDef(tag: Tag) extends Table[UserTweet](tag, "UserTweet") with BaseTable[UserTweet] with TweetTableMappers {
 
+  lazy val twitterId = column[Long]("twitterId", O.NotNull)
   lazy val userId = column[Long]("userId", O.NotNull)
   lazy val tweet = column[Tweet]("tweet", O.NotNull)
   lazy val timestamp = column[DateTime]("timestamp", O.NotNull)
 
-  def * = (id, userId, tweet, timestamp) <>(UserTweet.tupled, UserTweet.unapply)
+  def * = (id, twitterId, userId, tweet, timestamp) <>(UserTweet.tupled, UserTweet.unapply)
 
 }
 
@@ -48,6 +49,12 @@ object UserTweetTable extends TableQuery(new UserTweetTableDef(_)) with BaseTabl
               (user, count)
           }
       }.flatten
+    }
+  }
+
+  def getMaxTwitterId(userId: Long): Option[Long] = {
+    db.withSession {
+      self.filter(_.userId === userId).map(_.twitterId).max.run
     }
   }
 

@@ -1,7 +1,7 @@
 package controllers
 
 import models.traits.Filter
-import models._
+import models.{HashtagTable, UserDataTable, UserTable, UserTweetTable, _}
 import play.api.mvc.{Action, Controller}
 
 case class Stats(tweetsPerUser: Long, followersPerUser: Long, friendsPerUser: Long)
