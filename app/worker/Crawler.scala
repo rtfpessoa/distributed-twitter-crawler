@@ -99,7 +99,7 @@ object Crawler {
         userTweet =>
           userTweet.tweet.hashtags.map {
             hashtag =>
-              Hashtag(-1, userTweet.userId, hashtag)
+              Hashtag(-1, userTweet.id, hashtag)
           }
       }.flatten)
 

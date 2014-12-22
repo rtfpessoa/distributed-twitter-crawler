@@ -40,7 +40,7 @@ object UserTweetTable extends TableQuery(new UserTweetTableDef(_)) with BaseTabl
   def listHashtag(filter: String, limit: Int, offset: Int) = {
     db.withSession {
       (for {
-        hashtag <- HashtagTable if hashtag.label === filter
+        hashtag <- HashtagTable if hashtag.label like "%" + filter + "%"
         userTweet <- this if userTweet.id === hashtag.tweetId
       } yield userTweet).drop(offset).take(limit).list
     }
@@ -49,7 +49,7 @@ object UserTweetTable extends TableQuery(new UserTweetTableDef(_)) with BaseTabl
   def listUsername(filter: String, limit: Int, offset: Int) = {
     db.withSession {
       (for {
-        user <- UserTable if user.username === filter
+        user <- UserTable if user.username like "%" + filter + "%"
         userTweet <- this if userTweet.userId === user.id
       } yield userTweet).drop(offset).take(limit).list
     }
@@ -58,7 +58,7 @@ object UserTweetTable extends TableQuery(new UserTweetTableDef(_)) with BaseTabl
   def listLocation(filter: String, limit: Int, offset: Int) = {
     db.withSession {
       (for {
-        location <- LocationTable if location.label === filter
+        location <- LocationTable if location.label like "%" + filter + "%"
         userTweet <- this if userTweet.id === location.tweetId
       } yield userTweet).drop(offset).take(limit).list
     }

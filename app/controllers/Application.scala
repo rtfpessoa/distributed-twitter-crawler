@@ -29,6 +29,27 @@ object Application extends Controller {
       Ok(views.html.index(tweets, filter))
   }
 
+  def tweetsByHashtag(hashtag: String, step: Option[Int]) = Action {
+    implicit request =>
+      val filter = Filter(limit = 20, step.getOrElse(0))
+      val tweets = UserTweetTable.listHashtag(hashtag, filter.limit, filter.offset)
+      Ok(views.html.index(tweets, filter))
+  }
+
+  def tweetsByUser(username: String, step: Option[Int]) = Action {
+    implicit request =>
+      val filter = Filter(limit = 20, step.getOrElse(0))
+      val tweets = UserTweetTable.listUsername(username, filter.limit, filter.offset)
+      Ok(views.html.index(tweets, filter))
+  }
+
+  def tweetsByLocation(location: String, step: Option[Int]) = Action {
+    implicit request =>
+      val filter = Filter(limit = 20, step.getOrElse(0))
+      val tweets = UserTweetTable.listLocation(location, filter.limit, filter.offset)
+      Ok(views.html.index(tweets, filter))
+  }
+
   def hashtags(step: Option[Int]) = Action {
     implicit request =>
       val filter = Filter(limit = 20, step.getOrElse(0))

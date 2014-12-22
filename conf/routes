@@ -3,19 +3,22 @@
 # ~~~~
 
 # Home page
-GET        /                             controllers.Application.index
-GET        /tweet/list                   controllers.Application.tweets(step: Option[Int], hashtag: Option[String], username: Option[String], location: Option[String])
-GET        /hashtags/list                controllers.Application.hashtags(step: Option[Int])
-GET        /users/list                   controllers.Application.users(step: Option[Int])
-GET        /locations/list               controllers.Application.locations(step: Option[Int])
-GET        /stats                        controllers.Application.stats
+GET        /                                controllers.Application.index
+GET        /tweet/list                      controllers.Application.tweets(step: Option[Int], hashtag: Option[String], username: Option[String], location: Option[String])
+GET        /tweet/hashtag/:hashtag          controllers.Application.tweetsByHashtag(hashtag: String, step: Option[Int])
+GET        /tweet/username/:username        controllers.Application.tweetsByUser(username: String, step: Option[Int])
+GET        /tweet/location/:location        controllers.Application.tweetsByLocation(location: String, step: Option[Int])
+GET        /hashtags/list                   controllers.Application.hashtags(step: Option[Int])
+GET        /users/list                      controllers.Application.users(step: Option[Int])
+GET        /locations/list                  controllers.Application.locations(step: Option[Int])
+GET        /stats                           controllers.Application.stats
 
 # Map static resources from the /public folder to the /assets URL path
-GET        /assets/*file                 controllers.Assets.versioned(path="/public", file: Asset)
+GET        /assets/*file                    controllers.Assets.versioned(path="/public", file: Asset)
 
 # Master
-GET        /addWorker/:ip                controllers.MastermindController.addWorker(ip: String)
-GET        /workDone/$wid<[0-9]+>        controllers.MastermindController.workDone(wid: Long)
+GET        /addWorker/:ip                   controllers.MastermindController.addWorker(ip: String)
+GET        /workDone/$wid<[0-9]+>           controllers.MastermindController.workDone(wid: Long)
 
 # Worker
-GET        /newWork/$wid<[0-9]+>         controllers.WorkerController.newWork(wid: Long)
+GET        /newWork/$wid<[0-9]+>            controllers.WorkerController.newWork(wid: Long)
