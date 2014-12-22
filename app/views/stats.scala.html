@@ -1,5 +1,7 @@
-@()(implicit request: RequestHeader)
+@(stats: controllers.Stats)(implicit request: RequestHeader)
 
 @template("stats") {
-    <p>Cenas & Coisas</p>
+    <p><b>Tweets per User</b> @stats.tweetsPerUser</p>
+    <p><b>Followers per User</b> @stats.followersPerUser</p>
+    <p><b>Friends per User</b> @stats.friendsPerUser</p>
 }

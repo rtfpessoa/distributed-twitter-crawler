@@ -1,8 +1,10 @@
 package controllers
 
-import models.UserTweetTable
 import models.traits.Filter
+import models.{UserDataTable, UserTable, UserTweetTable}
 import play.api.mvc.{Action, Controller}
+
+case class Stats(tweetsPerUser: Long, followersPerUser: Long, friendsPerUser: Long)
 
 object Application extends Controller {
 
@@ -20,7 +22,17 @@ object Application extends Controller {
 
   def stats = Action {
     implicit request =>
-      Ok(views.html.stats())
+      val users = UserTable.list()
+      val usersData = UserDataTable.list()
+      val tweets = UserTweetTable.list()
+
+      val tweetsPerUser = users.length / Math.min(1, tweets.length)
+      val followersPerUser = usersData.map(_.followers).sum / Math.min(1, users.length)
+      val friendsPerUser = usersData.map(_.friends).sum / Math.min(1, users.length)
+
+      val stats = Stats(tweetsPerUser, followersPerUser, friendsPerUser)
+
+      Ok(views.html.stats(stats))
   }
 
 }
