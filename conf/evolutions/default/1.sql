@@ -5,7 +5,7 @@ CREATE TABLE "User" (
   "username"   VARCHAR(255) NOT NULL UNIQUE,
   "timestamp"  TIMESTAMP    NOT NULL DEFAULT NOW(),
   "lastUpdate" TIMESTAMP    NOT NULL DEFAULT '1980-01-01 00:00:00.097000',
-  "nrUpdates"  BIGINT       NOT NULL
+  "nrUpdates"  BIGINT       NOT NULL DEFAULT 0
 );
 
 CREATE TABLE "UserData" (

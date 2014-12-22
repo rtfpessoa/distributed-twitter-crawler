@@ -10,13 +10,22 @@ object Application extends Controller {
 
   def index = Action {
     implicit request =>
-      Redirect(controllers.routes.Application.tweets(None))
+      Redirect(controllers.routes.Application.tweets(None, None, None, None))
   }
 
-  def tweets(step: Option[Int]) = Action {
+  def tweets(step: Option[Int], hashtag: Option[String], username: Option[String], location: Option[String]) = Action {
     implicit request =>
       val filter = Filter(limit = 20, step.getOrElse(0))
-      val tweets = UserTweetTable.list(filter.limit, filter.offset)
+      val tweets = (hashtag, username, location) match {
+        case (Some(hashtagFilter), _, _) =>
+          UserTweetTable.listHashtag(hashtagFilter, filter.limit, filter.offset)
+        case (_, Some(usernameFilter), _) =>
+          UserTweetTable.listUsername(usernameFilter, filter.limit, filter.offset)
+        case (_, _, Some(locationFilter)) =>
+          UserTweetTable.listLocation(locationFilter, filter.limit, filter.offset)
+        case _ =>
+          UserTweetTable.list(filter.limit, filter.offset)
+      }
       Ok(views.html.index(tweets, filter))
   }
 

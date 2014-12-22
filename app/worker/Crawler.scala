@@ -21,7 +21,7 @@ object Crawler {
 
   private lazy val config = Play.configuration
 
-  private val beginingOfTime = new DateTime("1980-01-01 00:00:00.097000")
+  private val beginningOfTime = new DateTime("1980-01-01")
 
   def register(): Unit = {
     config.getString("dtc.mastermind.ip").map {
@@ -113,9 +113,9 @@ object Crawler {
 
       val allUsers = UserTable.list().map(_.username)
 
-      tweets.map(_.mentions).flatten.distinct.filterNot(allUsers.contains).flatMap {
+      tweets.map(_.mentions).flatten.distinct.filterNot(allUsers.contains).map {
         username =>
-          Try(UserTable.create(User(-1, username, timestamp, beginingOfTime, 0L))).toOption
+          UserTable.create(User(-1, username, timestamp, beginningOfTime, 0L))
       }
     }
   }
@@ -139,7 +139,7 @@ object Crawler {
           case apiUser if !allUsers.contains(apiUser.username) =>
             Try {
               val timestamp = DateTime.now()
-              val user = UserTable.create(User(-1, apiUser.username, timestamp, beginingOfTime, 0L))
+              val user = UserTable.create(User(-1, apiUser.username, timestamp, beginningOfTime, 0L))
               UserDataTable.create(UserData(-1, user.id, apiUser.followersCount, apiUser.friendsCount))
             }.toOption
         }

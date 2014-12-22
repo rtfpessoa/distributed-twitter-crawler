@@ -37,6 +37,33 @@ object UserTweetTable extends TableQuery(new UserTweetTableDef(_)) with BaseTabl
 
   lazy val db = GenericDB
 
+  def listHashtag(filter: String, limit: Int, offset: Int) = {
+    db.withSession {
+      (for {
+        hashtag <- HashtagTable if hashtag.label === filter
+        userTweet <- this if userTweet.id === hashtag.tweetId
+      } yield userTweet).drop(offset).take(limit).list
+    }
+  }
+
+  def listUsername(filter: String, limit: Int, offset: Int) = {
+    db.withSession {
+      (for {
+        user <- UserTable if user.username === filter
+        userTweet <- this if userTweet.userId === user.id
+      } yield userTweet).drop(offset).take(limit).list
+    }
+  }
+
+  def listLocation(filter: String, limit: Int, offset: Int) = {
+    db.withSession {
+      (for {
+        location <- LocationTable if location.label === filter
+        userTweet <- this if userTweet.id === location.tweetId
+      } yield userTweet).drop(offset).take(limit).list
+    }
+  }
+
   def listCount(limit: Int, offset: Int): Seq[(User, Int)] = {
     db.withSession {
       self.groupBy(_.userId).map {

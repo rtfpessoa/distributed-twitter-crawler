@@ -8,11 +8,34 @@
         <div class="page-body">
 
             <div class="row">
-                <div class="input-group col-md-3">
-                    <span class="input-group-addon">@@</span>
+                <div class="col-md-3">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Filter by hashtag">
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="button">Go!</button>
+                        </span>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="input-group">
                         <input type="text" class="form-control" placeholder="Filter by username">
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="button">Go!</button>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Filter by location">
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="button">Go!</button>
+                        </span>
+                    </div>
                 </div>
             </div>
+
+            <br>
 
             <ul class="list-group">
             @for(tweet <- tweets) {
@@ -46,14 +69,14 @@
         <nav>
             <ul class="pagination">
                 @if(filter.offset - filter.limit >= 0) {
-                    <li><a href="@controllers.routes.Application.tweets(Some(filter.offset - filter.limit))">
+                    <li><a href="@controllers.routes.Application.tweets(Some(filter.offset - filter.limit), None, None, None)">
                         <span>&laquo; Previous</span>
                     </a></li>
                 } else {
                     <li class="disabled"><span>&laquo; Previous</span></li>
                 }
                 @if(tweets.length == filter.limit) {
-                    <li><a href="@controllers.routes.Application.tweets(Some(filter.offset + filter.limit))">
+                    <li><a href="@controllers.routes.Application.tweets(Some(filter.offset + filter.limit), None, None, None)">
                         <span>Next &raquo;</span></a></li>
                 } else {
                     <li class="disabled"><span>Next &raquo;</span></li>
