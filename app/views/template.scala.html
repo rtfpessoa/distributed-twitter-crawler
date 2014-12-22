@@ -29,9 +29,9 @@
                 <div id="navbar" class="navbar-collapse collapse">
                     <ul class="nav navbar-nav">
                         <li class="@if(menu == "tweets") {active}"><a href="@controllers.routes.Application.tweets(None)">Tweets</a></li>
-                        <li class="@if(menu == "hashtags") {active}"><a href="#hashtags">Hashtags</a></li>
-                        <li class="@if(menu == "users") {active}"><a href="#users">Users</a></li>
-                        <li class="@if(menu == "locations") {active}"><a href="#locations">Locations</a></li>
+                        <li class="@if(menu == "hashtags") {active}"><a href="@controllers.routes.Application.hashtags(None)">Hashtags</a></li>
+                        <li class="@if(menu == "users") {active}"><a href="@controllers.routes.Application.users(None)">Users</a></li>
+                        <li class="@if(menu == "locations") {active}"><a href="@controllers.routes.Application.locations(None)">Locations</a></li>
                         <li class="@if(menu == "stats") {active}"><a href="@controllers.routes.Application.stats()">Stats</a></li>
                     </ul>
                 </div>

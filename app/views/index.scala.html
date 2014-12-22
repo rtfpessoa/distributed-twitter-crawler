@@ -11,7 +11,7 @@
                 <li class="list-group-item">
                     <div>
                         <div class="well well-sm">@tweet.tweet.text</div>
-                        <div class="pull-right">- @tweet.user.map(_.username)</div>
+                        <div class="pull-right">@tweet.user.map(_.username)</div>
                         <p><b>Created:</b> <span class="PrettyTime" title="@tweet.tweet.created_at"></span></p>
                         @tweet.tweet.location.map { location =>
                             <p><b>Location:</b> @location.place, @location.country</p>
@@ -23,7 +23,11 @@
                             <p><b>Mentions:</b> @tweet.tweet.mentions.mkString("@", ",", "")</p>
                         }
                         @tweet.tweet.urls.headOption.map { _ =>
-                            <p><b>Urls:</b> @tweet.tweet.urls.mkString(",")</p>
+                            <p><b>Urls:</b>
+                                @tweet.tweet.urls.map { url =>
+                                    <a href="@url">@url</a>
+                                }
+                            </p>
                         }
                     </div>
                 </li>

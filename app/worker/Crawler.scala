@@ -87,11 +87,18 @@ object Crawler {
       user <- UserTable.getById(work.userId)
       tweets <- getTweets(user.username, work.offset.getOrElse(100))
     } yield {
-      val userTweets = tweets.map {
+      val userTweets = UserTweetTable.createAndReturn(tweets.map {
         tweet =>
           UserTweet(-1, user.id, tweet, timestamp)
-      }
-      UserTweetTable.create(userTweets)
+      })
+
+      HashtagTable.create(userTweets.map {
+        userTweet =>
+          userTweet.tweet.hashtags.map {
+            hashtag =>
+              Hashtag(-1, userTweet.userId, hashtag)
+          }
+      }.flatten)
 
       val allUsers = UserTable.list().map(_.username)
 

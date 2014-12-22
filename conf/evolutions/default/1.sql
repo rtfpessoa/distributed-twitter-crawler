@@ -42,6 +42,12 @@ CREATE TABLE "APILimit" (
   "requests"    INT          NOT NULL DEFAULT 0
 );
 
+CREATE TABLE "Hashtag" (
+  "id"      SERIAL PRIMARY KEY,
+  "tweetId" BIGINT REFERENCES "UserData" ON DELETE SET NULL,
+  "label"   VARCHAR(255) NOT NULL
+);
+
 -- initial users
 
 INSERT INTO "User" ("username") VALUES ('rtfpessoa');

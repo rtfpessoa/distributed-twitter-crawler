@@ -1,0 +1,44 @@
+@(users: Seq[(User, Int)], filter: models.traits.Filter)(implicit request: RequestHeader)
+
+@template("users") {
+    <div class="page-header">
+        <h1>Users</h1>
+    </div>
+
+    <div class="page-body">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>#tweets</th>
+                </tr>
+            </thead>
+            <tbody>
+            @for((user, count) <- users) {
+                <tr>
+                    <td>@@@user.username</td>
+                    <td>@count</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+
+    <nav>
+        <ul class="pagination">
+            @if(filter.offset - filter.limit >= 0) {
+                <li><a href="@controllers.routes.Application.users(Some(filter.offset - filter.limit))">
+                    <span>&laquo; Previous</span>
+                </a></li>
+            } else {
+                <li class="disabled"><span>&laquo; Previous</span></li>
+            }
+            @if(users.length == filter.limit) {
+                <li><a href="@controllers.routes.Application.users(Some(filter.offset + filter.limit))">
+                    <span>Next &raquo;</span></a></li>
+            } else {
+                <li class="disabled"><span>Next &raquo;</span></li>
+            }
+        </ul>
+    </nav>
+}
