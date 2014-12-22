@@ -33,7 +33,7 @@ object Mastermind {
   def createWork(): Boolean = {
     Logger.info(s"Creating new work.")
 
-    val allUsers = UserTable.listUsersToCrawl
+    val allUsers = UserTable.listUsersToCrawl(Option(100))
 
     allUsers.map {
       user =>

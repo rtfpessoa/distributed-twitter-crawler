@@ -24,15 +24,21 @@ object UserTable extends TableQuery(new UserTableDef(_)) with BaseTableQueryOps[
 
   lazy val db = GenericDB
 
-  def listUsersToCrawl: Seq[User] = {
+  def listUsersToCrawl(limit: Option[Int] = Option.empty): Seq[User] = {
     db.withSession {
-      (for {
+      val allUsersToUpdate = (for {
         (user, data) <- this.leftJoin(UserDataTable).on(_.id === _.userId)
       } yield (user, data))
         .filter { case (user, _) => user.lastUpdate < DateTime.now().minusMinutes(15)}
         .sortBy { case (_, data) => (data.followers.desc, data.friends.desc)}
         .map { case (user, _) => user}
-        .list
+
+      val usersToUpdateLimited = limit.map {
+        limit =>
+          allUsersToUpdate.take(limit)
+      }.getOrElse(allUsersToUpdate)
+
+      usersToUpdateLimited.list
     }
   }
 
