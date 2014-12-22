@@ -16,7 +16,7 @@
             <tbody>
             @for((user, count) <- users) {
                 <tr>
-                    <td>@@@user.username</td>
+                    <td><a href="@controllers.routes.Application.tweetsByUser(user.username, None)">@@@user.username</a></td>
                     <td>@count</td>
                 </tr>
             }

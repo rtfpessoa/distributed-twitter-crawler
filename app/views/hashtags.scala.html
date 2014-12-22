@@ -16,7 +16,7 @@
             <tbody>
             @for((hashtag, count) <- hashtags) {
                 <tr>
-                    <td>#@hashtag</td>
+                    <td><a href="@controllers.routes.Application.tweetsByHashtag(hashtag, None)">#@hashtag</a></td>
                     <td>@count</td>
                 </tr>
             }

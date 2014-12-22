@@ -16,7 +16,7 @@
             <tbody>
             @for((location, count) <- users) {
                 <tr>
-                    <td>@location</td>
+                    <td><a href="@controllers.routes.Application.tweetsByLocation(location, None)">@location</a></td>
                     <td>@count</td>
                 </tr>
             }

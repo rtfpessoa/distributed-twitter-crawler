@@ -55,18 +55,43 @@
                         <div class="pull-right">@tweet.user.map(_.username)</div>
                         <p><b>Created:</b> <span class="PrettyTime" title="@tweet.tweet.created_at"></span></p>
                         @tweet.tweet.location.map { location =>
-                            <p><b>Location:</b> @location.place, @location.country</p>
+                            <p>
+                                <b>Location:</b>
+                                @tweet.tweet.location.map { location =>
+                                    <a href="@controllers.routes.Application.tweetsByLocation(location.place, None)">
+                                        @location.place, @location.country&nbsp;
+                                    </a>
+                                }
+                            </p>
                         }
+
                         @tweet.tweet.hashtags.headOption.map { _ =>
-                            <p><b>Hashtags:</b> @tweet.tweet.hashtags.mkString("#", ",", "")</p>
+                            <p>
+                                <b>Hashtags:</b>
+                                @tweet.tweet.hashtags.map { hashtag =>
+                                    <a href="@controllers.routes.Application.tweetsByHashtag(hashtag, None)">
+                                        #@hashtag&nbsp;
+                                    </a>
+                                }
+                            </p>
                         }
+
                         @tweet.tweet.mentions.headOption.map { _ =>
-                            <p><b>Mentions:</b> @tweet.tweet.mentions.mkString("@", ",", "")</p>
+                            <p>
+                                <b>Mentions:</b>
+                                @tweet.tweet.mentions.map { user =>
+                                    <a href="@controllers.routes.Application.tweetsByUser(user, None)">
+                                    @@@user &nbsp;
+                                    </a>
+                                }
+                            </p>
                         }
+
                         @tweet.tweet.urls.headOption.map { _ =>
-                            <p><b>Urls:</b>
+                            <p>
+                                <b>Urls:</b>
                                 @tweet.tweet.urls.map { url =>
-                                    <a href="@url">@url</a>
+                                    <a href="@url">@url</a> &nbsp;
                                 }
                             </p>
                         }
