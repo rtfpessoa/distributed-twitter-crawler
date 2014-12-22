@@ -10,4 +10,9 @@ object Application extends Controller {
     Ok(views.html.index(tweets))
   }
 
+  def stats = Action {
+    implicit request =>
+      Ok(views.html.stats())
+  }
+
 }
