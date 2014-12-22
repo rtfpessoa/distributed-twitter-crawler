@@ -1,0 +1,52 @@
+@(menu: String)(content: Html)(implicit request: RequestHeader, header: Html = HtmlFormat.empty, footer: Html = HtmlFormat.empty)
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>dtc</title>
+
+        <link rel="stylesheet" href="@routes.Assets.versioned("lib/bootstrap/css/bootstrap.min.css")">
+        <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/main.css")">
+
+        @header
+    </head>
+    <body>
+
+        <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="#">DTCrawler</a>
+                </div>
+                <div id="navbar" class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav">
+                        <li class="@if(menu == "tweets") {active}"><a href="#tweets">Tweets</a></li>
+                        <li class="@if(menu == "hashtags") {active}"><a href="#hashtags">Hashtags</a></li>
+                        <li class="@if(menu == "users") {active}"><a href="#users">Users</a></li>
+                        <li class="@if(menu == "locations") {active}"><a href="#locations">Locations</a></li>
+                        <li class="@if(menu == "stats") {active}"><a href="#stats">Stats</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container">
+        @content
+        </div>
+
+        <script type="text/javascript" src="@routes.Assets.versioned("lib/jquery/jquery.min.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.versioned("lib/bootstrap/js/bootstrap.min.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.versioned("javascripts/timeago.min.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.versioned("javascripts/main.js")"></script>
+
+        @footer
+    </body>
+</html>
