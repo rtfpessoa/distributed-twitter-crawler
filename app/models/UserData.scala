@@ -3,6 +3,7 @@ package models
 import models.traits.{BaseTable, BaseTableQueryOps, GenericDB}
 
 import scala.slick.driver.PostgresDriver.simple._
+import scala.slick.jdbc.JdbcBackend.Database.dynamicSession
 
 case class UserData(id: Long, userId: Long, followers: Long, friends: Long)
 
@@ -21,4 +22,15 @@ object UserDataTable extends TableQuery(new UserDataTableDef(_)) with BaseTableQ
 
   lazy val db = GenericDB
 
+  def countFollowers(): Long = {
+    db.withSession {
+      self.map(_.followers).sum.run.getOrElse(0L)
+    }
+  }
+
+  def countFriends(): Long = {
+    db.withSession {
+      self.map(_.friends).sum.run.getOrElse(0L)
+    }
+  }
 }

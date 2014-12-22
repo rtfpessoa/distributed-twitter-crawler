@@ -22,13 +22,14 @@ object Application extends Controller {
 
   def stats = Action {
     implicit request =>
-      val users = UserTable.list()
-      val usersData = UserDataTable.list()
-      val tweets = UserTweetTable.list()
+      val usersCount = UserTable.count()
+      val followersCount = UserDataTable.countFollowers()
+      val friendsCount = UserDataTable.countFriends()
+      val tweetsCount = UserTweetTable.count()
 
-      val tweetsPerUser = users.length / Math.min(1, tweets.length)
-      val followersPerUser = usersData.map(_.followers).sum / Math.min(1, users.length)
-      val friendsPerUser = usersData.map(_.friends).sum / Math.min(1, users.length)
+      val tweetsPerUser = tweetsCount / Math.max(1, tweetsCount)
+      val followersPerUser = followersCount / Math.max(1, usersCount)
+      val friendsPerUser = friendsCount / Math.max(1, usersCount)
 
       val stats = Stats(tweetsPerUser, followersPerUser, friendsPerUser)
 

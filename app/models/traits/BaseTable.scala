@@ -97,4 +97,10 @@ trait BaseTableQueryOps[SimpleTable <: Types.BaseTableT[A], A <: Types.IDObj] ex
     }
   }
 
+  def count(): Long = {
+    db.withSession {
+      self.length.run
+    }
+  }
+
 }
