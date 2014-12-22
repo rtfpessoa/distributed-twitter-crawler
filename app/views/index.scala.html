@@ -75,6 +75,7 @@
                 } else {
                     <li class="disabled"><span>&laquo; Previous</span></li>
                 }
+
                 @if(tweets.length == filter.limit) {
                     <li><a href="@controllers.routes.Application.tweets(Some(filter.offset + filter.limit), None, None, None)">
                         <span>Next &raquo;</span></a></li>

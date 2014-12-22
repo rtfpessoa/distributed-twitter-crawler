@@ -1,7 +1,26 @@
 @(stats: controllers.Stats)(implicit request: RequestHeader)
 
 @template("stats") {
-    <p><b>Tweets per User</b> @stats.tweetsPerUser</p>
-    <p><b>Followers per User</b> @stats.followersPerUser</p>
-    <p><b>Friends per User</b> @stats.friendsPerUser</p>
+    <div class="page-header">
+        <h1>Statistics</h1>
+    </div>
+
+    <div class="page-body">
+        <table class="table table-striped">
+            <tbody>
+                <tr>
+                    <td>Tweets per User</td>
+                    <td> @stats.tweetsPerUser</td>
+                </tr>
+                <tr>
+                    <td>Followers per User</td>
+                    <td>@stats.followersPerUser</td>
+                </tr>
+                <tr>
+                    <td>Friends per User</td>
+                    <td>@stats.friendsPerUser</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 }
