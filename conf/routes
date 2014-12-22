@@ -7,7 +7,7 @@ GET        /                             controllers.Application.index
 GET        /tweet/list                   controllers.Application.tweets(step: Option[Int])
 GET        /hashtags/list                controllers.Application.hashtags(step: Option[Int])
 GET        /users/list                   controllers.Application.users(step: Option[Int])
-GET        /locations/list               controllers.Application.loccations(step: Option[Int])
+GET        /locations/list               controllers.Application.locations(step: Option[Int])
 GET        /stats                        controllers.Application.stats
 
 # Map static resources from the /public folder to the /assets URL path

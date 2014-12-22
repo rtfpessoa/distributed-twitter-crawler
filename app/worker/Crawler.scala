@@ -100,6 +100,14 @@ object Crawler {
           }
       }.flatten)
 
+      LocationTable.create(userTweets.map {
+        userTweet =>
+          userTweet.tweet.location.map {
+            location =>
+              Location(-1, userTweet.userId, location.place)
+          }
+      }.flatten)
+
       val allUsers = UserTable.list().map(_.username)
 
       tweets.map(_.mentions).flatten.distinct.filterNot(allUsers.contains).flatMap {

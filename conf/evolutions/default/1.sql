@@ -48,6 +48,12 @@ CREATE TABLE "Hashtag" (
   "label"   VARCHAR(255) NOT NULL
 );
 
+CREATE TABLE "Location" (
+  "id"      SERIAL PRIMARY KEY,
+  "tweetId" BIGINT REFERENCES "UserData" ON DELETE SET NULL,
+  "label"   VARCHAR(255) NOT NULL
+);
+
 -- initial users
 
 INSERT INTO "User" ("username") VALUES ('rtfpessoa');

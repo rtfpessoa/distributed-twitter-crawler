@@ -6,6 +6,14 @@
         </div>
 
         <div class="page-body">
+
+            <div class="row">
+                <div class="input-group col-md-3">
+                    <span class="input-group-addon">@@</span>
+                        <input type="text" class="form-control" placeholder="Filter by username">
+                </div>
+            </div>
+
             <ul class="list-group">
             @for(tweet <- tweets) {
                 <li class="list-group-item">

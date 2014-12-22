@@ -1,11 +1,7 @@
 package controllers
 
-<<<<<<< HEAD
-=======
-import models.{UserTable, HashtagTable, UserTweetTable}
->>>>>>> nao sei
 import models.traits.Filter
-import models.{UserDataTable, UserTable, UserTweetTable}
+import models._
 import play.api.mvc.{Action, Controller}
 
 case class Stats(tweetsPerUser: Long, followersPerUser: Long, friendsPerUser: Long)
@@ -41,8 +37,8 @@ object Application extends Controller {
   def locations(step: Option[Int]) = Action {
     implicit request =>
       val filter = Filter(limit = 20, step.getOrElse(0))
-      val users = UserTweetTable.listCount(filter.limit, filter.offset)
-      Ok(views.html.users(users, filter)) 
+      val locations = LocationTable.listCount(filter.limit, filter.offset)
+      Ok(views.html.locations(locations, filter))
   }
 
   def stats = Action {
