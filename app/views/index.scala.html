@@ -1,31 +1,10 @@
 @(tweets: Seq[UserTweet], filter: models.traits.Filter)(implicit request: RequestHeader)
 
-@head = {}
+    @head = {}
 
-@footer = {
-    <script>
-        $(document).ready( function() {
-            $("#hashtag-btn").click(function(e){
-                e.preventDefault();
-                var arr = $("#hashtag-content").data("url").split('?');
-                var url = arr[0] + $("#hashtag-content").val() + "?" + arr[1];
-                window.location = url;
-            });
-            $("#username-btn").click(function(e){
-                e.preventDefault();
-                var arr = $("#username-content").data("url").split('?');
-                var url = arr[0] + $("#username-content").val() + "?" + arr[1];
-                window.location = url;
-            });
-            $("#location-btn").click(function(e){
-                e.preventDefault();
-                var arr = $("#location-content").data("url").split('?');
-                var url = arr[0] + $("#location-content").val() + "?" + arr[1];
-                window.location = url;
-            });
-        });
-    </script>
-}
+    @footer = {
+        <script type="text/javascript" src="@routes.Assets.versioned("javascripts/index.js")"></script>
+    }
 
     @template("tweets") {
         <div class="page-header">
@@ -44,6 +23,7 @@
                         </span>
                     </div>
                 </div>
+
                 <div class="col-md-3">
                     <div class="input-group">
                         <input type="text" class="form-control" placeholder="Filter by username" id="username-content"
