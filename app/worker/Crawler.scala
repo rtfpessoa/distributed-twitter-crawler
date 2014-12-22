@@ -107,7 +107,7 @@ object Crawler {
         userTweet =>
           userTweet.tweet.location.map {
             location =>
-              Location(-1, userTweet.userId, location.place)
+              Location(-1, userTweet.id, location.place)
           }
       }.flatten)
 
