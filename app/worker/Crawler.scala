@@ -121,8 +121,8 @@ object Crawler {
   }
 
   private def getTweets(username: String, count: Int, maxTwitterTweetId: Option[Long]): Option[Seq[api.Tweet]] = APILimitRules.withAPILimit("statuses/user_timeline") {
-    val maxPreviousId = maxTwitterTweetId.getOrElse(0l)
-    doRequest(s"statuses/user_timeline.json?screen_name=$username&count=$count&since_id=$maxPreviousId").asOpt[Seq[api.Tweet]]
+    val maxPreviousId = maxTwitterTweetId.map(id => s"since_id=$id").getOrElse("")
+    doRequest(s"statuses/user_timeline.json?screen_name=$username&count=$count&$maxPreviousId").asOpt[Seq[api.Tweet]]
   }
 
   private def crawlUserProfile(work: Work) = {
