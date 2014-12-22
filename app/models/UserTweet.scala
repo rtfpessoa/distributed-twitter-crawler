@@ -1,6 +1,6 @@
 package models
 
-import api.{Location, Tweet}
+import api.{Tweet, TweetLocation}
 import models.traits.{BaseTable, BaseTableQueryOps, GenericDB}
 import org.joda.time.DateTime
 import play.api.libs.json.{Format, Json}
@@ -13,7 +13,7 @@ case class UserTweet(id: Long, twitterId: Long, userId: Long, tweet: Tweet, time
 }
 
 trait TweetTableMappers {
-  implicit val apiLocationFormatter: Format[Location] = Json.format[Location]
+  implicit val apiLocationFormatter: Format[TweetLocation] = Json.format[TweetLocation]
   implicit val apiTweetFormatter: Format[Tweet] = Json.format[Tweet]
 
   implicit val tweetMapper = MappedColumnType.base[Tweet, String](

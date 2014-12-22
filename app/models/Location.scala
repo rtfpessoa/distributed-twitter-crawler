@@ -25,7 +25,7 @@ object LocationTable extends TableQuery(new LocationTableDef(_)) with BaseTableQ
 
   def listCount(limit: Int, offset: Int): Seq[(String, Int)] = {
     db.withSession {
-      self.groupBy(_.label).map{
+      self.groupBy(_.label).map {
         case (t1, t2) =>
           t1 -> t2.size
       }.sortBy(_._2.desc).drop(offset).take(limit).list
