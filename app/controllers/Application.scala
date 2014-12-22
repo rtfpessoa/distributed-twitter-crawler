@@ -1,13 +1,21 @@
 package controllers
 
 import models.UserTweetTable
-import play.api.mvc._
+import models.traits.Filter
+import play.api.mvc.{Action, Controller}
 
 object Application extends Controller {
 
   def index = Action {
-    val tweets = UserTweetTable.list()
-    Ok(views.html.index(tweets))
+    implicit request =>
+      Redirect(controllers.routes.Application.tweets(None))
+  }
+
+  def tweets(step: Option[Int]) = Action {
+    implicit request =>
+      val filter = Filter(limit = 20, step.getOrElse(0))
+      val tweets = UserTweetTable.list(filter.limit, filter.offset)
+      Ok(views.html.index(tweets, filter))
   }
 
   def stats = Action {

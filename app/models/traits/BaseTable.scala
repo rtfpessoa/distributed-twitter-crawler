@@ -7,7 +7,7 @@ import org.joda.time.DateTime
 import scala.language.reflectiveCalls
 import scala.slick.driver.PostgresDriver.simple._
 import scala.slick.jdbc.JdbcBackend.Database.dynamicSession
-import scala.slick.lifted.{Column, ColumnOrdered}
+import scala.slick.lifted.Column
 
 object Types {
 
@@ -57,6 +57,12 @@ trait BaseTableQueryOps[SimpleTable <: Types.BaseTableT[A], A <: Types.IDObj] ex
   def list(): List[A] = {
     db.withSession {
       (for (obj <- self sortBy (_.id)) yield obj).list
+    }
+  }
+
+  def list(limit: Int, offset: Int): List[A] = {
+    db.withSession {
+      (for (obj <- self sortBy (_.id)) yield obj).drop(offset).take(limit).list
     }
   }
 
