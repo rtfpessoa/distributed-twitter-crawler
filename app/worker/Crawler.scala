@@ -92,7 +92,7 @@ object Crawler {
     } yield {
       val userTweets = UserTweetTable.createAndReturn(tweets.map {
         tweet =>
-          UserTweet(-1, tweet.twitterId, user.id, tweet, timestamp)
+          UserTweet(-1, tweet.twitterId, user.id, tweet, tweet.created_at)
       })
 
       HashtagTable.create(userTweets.map {

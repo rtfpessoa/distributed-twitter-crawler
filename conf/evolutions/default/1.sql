@@ -59,7 +59,7 @@ CREATE TABLE "Location" (
 
 -- initial users
 
-INSERT INTO "User" ("username") VALUES ('rtfpessoa');
+INSERT INTO "User" ("username") VALUES ('cnn');
 
 # --- !Downs
 

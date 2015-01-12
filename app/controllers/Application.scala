@@ -24,7 +24,7 @@ object Application extends Controller {
         case (_, _, Some(locationFilter)) =>
           UserTweetTable.listLocation(locationFilter, filter.limit, filter.offset)
         case _ =>
-          UserTweetTable.list(filter.limit, filter.offset)
+          UserTweetTable.listOrdered(filter.limit, filter.offset)
       }
       Ok(views.html.index(tweets, filter))
   }

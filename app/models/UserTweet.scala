@@ -37,30 +37,36 @@ object UserTweetTable extends TableQuery(new UserTweetTableDef(_)) with BaseTabl
 
   lazy val db = GenericDB
 
-  def listHashtag(filter: String, limit: Int, offset: Int) = {
+  def listOrdered(limit: Int, offset: Int): List[UserTweet] = {
+    db.withSession {
+      self.sortBy(_.timestamp.desc).drop(offset).take(limit).list
+    }
+  }
+
+  def listHashtag(filter: String, limit: Int, offset: Int): List[UserTweet] = {
     db.withSession {
       (for {
         hashtag <- HashtagTable if hashtag.label like "%" + filter + "%"
         userTweet <- this if userTweet.id === hashtag.tweetId
-      } yield userTweet).drop(offset).take(limit).list
+      } yield userTweet).sortBy(_.timestamp).drop(offset).take(limit).list
     }
   }
 
-  def listUsername(filter: String, limit: Int, offset: Int) = {
+  def listUsername(filter: String, limit: Int, offset: Int): List[UserTweet] = {
     db.withSession {
       (for {
         user <- UserTable if user.username like "%" + filter + "%"
         userTweet <- this if userTweet.userId === user.id
-      } yield userTweet).drop(offset).take(limit).list
+      } yield userTweet).sortBy(_.timestamp).drop(offset).take(limit).list
     }
   }
 
-  def listLocation(filter: String, limit: Int, offset: Int) = {
+  def listLocation(filter: String, limit: Int, offset: Int): List[UserTweet] = {
     db.withSession {
       (for {
         location <- LocationTable if location.label like "%" + filter + "%"
         userTweet <- this if userTweet.id === location.tweetId
-      } yield userTweet).drop(offset).take(limit).list
+      } yield userTweet).sortBy(_.timestamp).drop(offset).take(limit).list
     }
   }
 
